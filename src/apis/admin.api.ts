@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import http from '~/utils/http'
 
 // Product
@@ -6,7 +7,6 @@ export const addProduct = (product?: any) => http.post(`/product/create/`, produ
 export const getProduct = (id: unknown) => http.get(`/product/get-details/${id}`)
 export const updateProduct = (id: unknown, params: any) => http.put(`/product/update/${id}`, params)
 
-export const blockFrize = (body: any) => http.patch(`/v1/wallet/block-frize`, body)
-export const openFrize = (body: any) => http.patch(`/v1/wallet/open-frize`, body)
-
+export const createRecharge = (body: any) => http.post(`/v1/wallet/add`, body)
+export const getRecharges = (params: any) => http.get(`/v1/wallet/all-history`, { params })
 export const getAllInOne = () => http.get(`/v1/wallet/all-inf`)

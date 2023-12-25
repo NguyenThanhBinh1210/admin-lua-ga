@@ -5,6 +5,7 @@ import { toast } from 'react-toastify'
 import { deleteStaff, getAllStaff, searchUser } from '~/apis/product.api'
 import Loading from '~/components/Loading/Loading'
 import Modal from '~/components/Modal'
+import CreateRecharge from '~/components/Modal/CreateRecharge'
 import CreateStaff from '~/components/Modal/CreateStaff'
 import NotReSearch from '~/components/NotReSearch/NotReSearch'
 import Paginate from '~/components/Pagination/Paginate'
@@ -13,11 +14,8 @@ import usePagination from '~/hooks/usePagination'
 
 const Users = () => {
   const [staff, setStaff] = useState<any>([])
-  console.log(staff)
   const [search, setSearch] = useState<string>('')
   const { currentPage, totalPages, currentData, setCurrentPage } = usePagination(8, staff)
-  const [showComment, setShowComment] = useState()
-  const [isModalOpen, setModalOpen] = useState(false)
   const [isModalOpenCreate, setModalOpenCreate] = useState(false)
 
   const searchMutation = useMutation({
@@ -52,18 +50,6 @@ const Users = () => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page)
     }
-  }
-  const handleReset = () => {
-    searchMutation.mutate('', {
-      onSuccess: (data) => {
-        setSearch('')
-        setStaff(data.data)
-        setCurrentPage(1)
-      },
-      onError: () => {
-        toast.warn('Lỗi!')
-      }
-    })
   }
   const handleSearch = (e: any) => {
     e.preventDefault()
@@ -173,16 +159,6 @@ const Users = () => {
                               >
                                 <button
                                   type='button'
-                                  onClick={() => {
-                                    setShowComment(item)
-                                    setModalOpen(true)
-                                  }}
-                                  className='text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
-                                >
-                                  Xem
-                                </button>
-                                <button
-                                  type='button'
                                   onClick={() => handleDeleteStaff(item._id)}
                                   className='text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900'
                                 >
@@ -202,7 +178,7 @@ const Users = () => {
           </>
         )}
       </div>
-      <Modal data={showComment} isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
+      {/* <Modal data={showComment} isOpen={isModalOpen} onClose={() => setModalOpen(false)} /> */}
       <CreateStaff isOpen={isModalOpenCreate} onClose={() => setModalOpenCreate(false)} />
     </>
   )

@@ -2,20 +2,22 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
-import { blockFrize, openFrize } from '~/apis/admin.api'
 import { deleteStaff, getAllStaff, searchUser } from '~/apis/product.api'
 import Loading from '~/components/Loading/Loading'
 import Modal from '~/components/Modal'
+import CreateRecharge from '~/components/Modal/CreateRecharge'
 import NotReSearch from '~/components/NotReSearch/NotReSearch'
 import Paginate from '~/components/Pagination/Paginate'
 import usePagination from '~/hooks/usePagination'
 
 const Custommer = () => {
   const [staff, setStaff] = useState<any>([])
+  const [userId, setUserId] = useState<string>('')
   const [search, setSearch] = useState<string>('')
   const { currentPage, totalPages, currentData, setCurrentPage } = usePagination(8, staff)
   const [showComment, setShowComment] = useState()
   const [isModalOpen, setModalOpen] = useState(false)
+  const [isOpenRecharge, setOpenRecharge] = useState(false)
 
   const searchMutation = useMutation({
     mutationFn: (id: string) => searchUser(id)
@@ -23,45 +25,11 @@ const Custommer = () => {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteStaff(id)
   })
-  const blockMutation = useMutation({
-    mutationFn: (id: any) => blockFrize(id)
-  })
-  const openMutation = useMutation({
-    mutationFn: (id: any) => openFrize(id)
-  })
   const queryClient = useQueryClient()
   const handleDeleteStaff = (id: string) => {
     deleteMutation.mutate(id, {
       onSuccess: () => {
         toast.success('Đã xoá!')
-        queryClient.invalidateQueries({ queryKey: ['user', 3] })
-      },
-      onError: () => {
-        toast.warn('Lỗi!')
-      }
-    })
-  }
-  const handleBlockStaff = (id: string) => {
-    const body: any = {
-      userId: id
-    }
-    blockMutation.mutate(body, {
-      onSuccess: () => {
-        toast.success('Đã chặn!')
-        queryClient.invalidateQueries({ queryKey: ['user', 3] })
-      },
-      onError: () => {
-        toast.warn('Lỗi!')
-      }
-    })
-  }
-  const handleOpenStaff = (id: string) => {
-    const body: any = {
-      userId: id
-    }
-    openMutation.mutate(body, {
-      onSuccess: () => {
-        toast.success('Đã mở!')
         queryClient.invalidateQueries({ queryKey: ['user', 3] })
       },
       onError: () => {
@@ -191,10 +159,6 @@ const Custommer = () => {
                         <th scope='col' className='px-6 py-3'>
                           Số tài khoản
                         </th>
-
-                        <th scope='col' className='px-6 py-3'>
-                          Status
-                        </th>
                         <th scope='col' className='px-6 py-3'>
                           Hành động
                         </th>
@@ -275,39 +239,20 @@ const Custommer = () => {
                               >
                                 {item.banKNumber}
                               </th>
-                              <th
-                                scope='row'
-                                className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
-                              >
-                                {item.prize ? (
-                                  <div className='bg-yellow-500 text-white flex justify-center rounded-md text-xs py-0.5 px-2'>
-                                    Blocked
-                                  </div>
-                                ) : (
-                                  <div className='bg-green-500 text-white flex justify-center rounded-md text-xs py-0.5 px-2'>
-                                    Open
-                                  </div>
-                                )}
-                              </th>
+
                               <th
                                 scope='row'
                                 className='px-6 py-3 w-[200px] flex items-center gap-x-2 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                               >
                                 <button
                                   type='button'
-                                  onClick={() => handleOpenStaff(item._id)}
-                                  className={`text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900 ${!item.prize && 'hidden'
-                                    }`}
+                                  onClick={() => {
+                                    setOpenRecharge(true)
+                                    setUserId(item._id)
+                                  }}
+                                  className={`text-white bg-yellow-500 hover:bg-yellow-600 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-yellow-900 `}
                                 >
-                                  Mở
-                                </button>
-                                <button
-                                  type='button'
-                                  onClick={() => handleBlockStaff(item._id)}
-                                  className={`text-white bg-yellow-500 hover:bg-yellow-600 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-yellow-900 ${item.prize && 'hidden'
-                                    }`}
-                                >
-                                  Chặn
+                                  Nạp
                                 </button>
                                 <button
                                   type='button'
@@ -330,6 +275,10 @@ const Custommer = () => {
           </>
         )}
       </div>
+      <CreateRecharge userId={userId} isOpen={isOpenRecharge} onClose={() => {
+        setOpenRecharge(false)
+        setUserId('')
+      }} />
       <Modal data={showComment} isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
     </>
   )

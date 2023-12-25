@@ -2,104 +2,73 @@
 import moment from 'moment'
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { AllHistory, UpdateHistory } from '~/apis/payment.api'
+import { getRecharges } from '~/apis/admin.api'
+import { UpdateHistory } from '~/apis/payment.api'
 import CreatePayment from '~/components/Modal/CreatePayment'
-// import { AppContext } from '~/contexts/app.context'
 
 const PaymentHistory = () => {
   const queryClient = useQueryClient()
 
-  // const { profile } = useContext(AppContext)
-  const [data, setData] = useState<any>([])
   const [showComment, setShowComment] = useState<any | null>(null)
   const [isModalOpen, setModalOpen] = useState(false)
   const [isModalOpenCreate, setModalOpenCreate] = useState(false)
   const [type, setType] = useState(0)
 
-  // console.log(data);
-
-  const arrayWithInfoRechargeMoney = []
-  const arrayWithoutInfoRechargeMoney = []
-
-  for (const item of data) {
-    if (item.info === 'recharge money') {
-      arrayWithInfoRechargeMoney.push(item)
-    } else {
-      arrayWithoutInfoRechargeMoney.push(item)
-    }
-  }
-
   const itemsPerPage = 8
 
-  const [currentPage, setCurrentPage] = useState(1)
-  const totalPages = Math.ceil(arrayWithInfoRechargeMoney?.length / itemsPerPage)
-  const startIndex = (currentPage - 1) * itemsPerPage
-  const endIndex = startIndex + itemsPerPage
-  const currentData = arrayWithInfoRechargeMoney?.slice(startIndex, endIndex)
-  const [currentPageWitdraw, setCurrentPageWitdraw] = useState(1)
-  const totalPagesWitdraw = Math.ceil(arrayWithoutInfoRechargeMoney?.length / itemsPerPage)
-  const startIndexWitdraw = (currentPageWitdraw - 1) * itemsPerPage
-  const endIndexWitdraw = startIndexWitdraw + itemsPerPage
-  const currentDataWitdraw = arrayWithoutInfoRechargeMoney?.slice(startIndexWitdraw, endIndexWitdraw)
+  // const [currentPageWitdraw, setCurrentPageWitdraw] = useState(1)
+  // const totalPagesWitdraw = Math.ceil(arrayWithoutInfoRechargeMoney?.length / itemsPerPage)
+  // const startIndexWitdraw = (currentPageWitdraw - 1) * itemsPerPage
+  // const endIndexWitdraw = startIndexWitdraw + itemsPerPage
+  // const currentDataWitdraw = arrayWithoutInfoRechargeMoney?.slice(startIndexWitdraw, endIndexWitdraw)
 
   const searchMutation = useMutation({
-    mutationFn: (title: string) => AllHistory({ codeOder: title })
+    mutationFn: (userId: string) => getRecharges({ userId: userId })
   })
 
   const updateMutation = useMutation({
     mutationFn: (id: string) => UpdateHistory(id)
   })
-  const handleUpdate = (id: string) => {
-    updateMutation.mutate(id, {
-      onSuccess: () => {
-        console.log('ok')
-        queryClient.invalidateQueries({ queryKey: ['hoa-don-chi-tiet', 100] })
-      },
-      onError: () => {
-        queryClient.invalidateQueries({ queryKey: ['hoa-don-chi-tiet', 100] })
-        console.log('no oke')
-      }
-    })
-  }
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page)
     }
   }
-  const handlePageChangeWitdraw = (page: number) => {
-    if (page >= 1 && page <= totalPagesWitdraw) {
-      setCurrentPageWitdraw(page)
-    }
-  }
+  // const handlePageChangeWitdraw = (page: number) => {
+  //   if (page >= 1 && page <= totalPagesWitdraw) {
+  //     setCurrentPageWitdraw(page)
+  //   }
+  // }
   const [search, setSearch] = useState<string>('')
 
   const handleSearch = (e: any) => {
     e.preventDefault()
-    searchMutation.mutate(search, {
-      onSuccess: (data) => {
-        setData(data.data)
-        if (data.data[0].info) {
-          setType(0)
-        } else {
-          setType(1)
+    if (type === 0) {
+      searchMutation.mutate(search, {
+        onSuccess: (data) => {
+          setRecharge(data.data)
+        },
+        onError: (error: unknown) => {
+          console.log(error)
         }
-      },
-      onError: (error: unknown) => {
-        console.log(error)
-      }
-    })
+      })
+    }
   }
-  const { data: dataConfig, isLoading: isLoadingOption } = useQuery({
-    queryKey: ['hoa-don-chi-tiet', 100],
+  const [dataRecharge, setRecharge] = useState<any>([])
+  const { isLoading: isLoadingOption } = useQuery({
+    queryKey: ['history-rechare'],
     queryFn: () => {
-      return AllHistory({})
+      return getRecharges({})
     },
     onSuccess: (data) => {
-      setData(data.data)
+      setRecharge(data.data)
     }
   })
-  console.log(currentData);
-  console.log(currentDataWitdraw);
+  const [currentPage, setCurrentPage] = useState(1)
+  const totalPages = Math.ceil(dataRecharge.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const currentData = dataRecharge.slice(startIndex, endIndex)
   return (
     <>
       <div className='flex justify-between mb-3 mobile:flex-col tablet:flex-col'>
@@ -170,14 +139,8 @@ const PaymentHistory = () => {
           <>
             <div className='flex justify-between'>
               <div>
-                {type === 0 && (
-                  <h1 className='text-xl font-semibold mb-2'>Số giao dịch Nạp: {arrayWithInfoRechargeMoney.length}</h1>
-                )}
-                {type === 1 && (
-                  <h1 className='text-xl font-semibold mb-2'>
-                    Số giao dịch Rút: {arrayWithoutInfoRechargeMoney.length}
-                  </h1>
-                )}
+                {type === 0 && <h1 className='text-xl font-semibold mb-2'>Số giao dịch Nạp: {dataRecharge.length}</h1>}
+                {type === 1 && <h1 className='text-xl font-semibold mb-2'>Số giao dịch Rút: {dataRecharge.length}</h1>}
               </div>
               <div className='flex gap-x-3 '>
                 <button
@@ -211,25 +174,16 @@ const PaymentHistory = () => {
                             STT
                           </th>
                           <th scope='col' className='px-6 py-3'>
-                            Mã nạp
-                          </th>
-                          <th scope='col' className='px-6 py-3'>
-                            Tiền nạp
+                            Điểm nạp
                           </th>
                           <th scope='col' className='px-6 py-3'>
                             UserId
-                          </th>
-                          <th scope='col' className='px-6 py-3'>
-                            Email
                           </th>
                           <th scope='col' className='px-6 py-3'>
                             Status
                           </th>
                           <th scope='col' className='px-6 py-3'>
                             Ngày nạp
-                          </th>
-                          <th scope='col' className='px-6 py-3'>
-                            Hành động
                           </th>
                         </tr>
                       </thead>
@@ -251,13 +205,7 @@ const PaymentHistory = () => {
                                   scope='row'
                                   className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                                 >
-                                  {item?.codeOder}
-                                </th>
-                                <th
-                                  scope='row'
-                                  className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
-                                >
-                                  ${item?.totalAmount}
+                                  {item?.totalAmount}
                                 </th>
                                 <th
                                   scope='row'
@@ -269,41 +217,18 @@ const PaymentHistory = () => {
                                   scope='row'
                                   className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                                 >
-                                  {item?.userId?.email}
-                                </th>
-                                <th
-                                  scope='row'
-                                  className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
-                                >
                                   <span
-                                    className={` ${item?.status === 'pending' ? 'bg-yellow-500' : 'bg-green-500'
+                                    className={` ${item?.status === 'pending' ? 'bg-green-500' : 'bg-green'
                                       } text-white px-2 py-0.5 pb-1 text-xs rounded-md`}
                                   >
-                                    {item?.status}
+                                    Done
                                   </span>
-                                  {/* pending */}
                                 </th>
                                 <th
                                   scope='row'
                                   className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                                 >
-                                  {/* {item?.createdAt} */}
                                   {moment(item?.createdAt).format('DD/MM/YYYY')}
-                                </th>
-
-                                <th
-                                  scope='row'
-                                  className='px-6 py-3 w-[200px] flex items-center gap-x-2 font-medium text-gray-900 whitespace-nowrap dark:text-white'
-                                >
-                                  <button
-                                    type='button'
-                                    onClick={() => {
-                                      handleUpdate(item._id)
-                                    }}
-                                    className='text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
-                                  >
-                                    Xác nhận
-                                  </button>
                                 </th>
                               </tr>
                             )
@@ -412,7 +337,7 @@ const PaymentHistory = () => {
                           </th>
                         </tr>
                       </thead>
-                      {currentDataWitdraw?.length !== 0 && (
+                      {/* {currentDataWitdraw?.length !== 0 && (
                         <tbody>
                           {currentDataWitdraw?.map((item: any, idx: number) => {
                             return (
@@ -497,10 +422,10 @@ const PaymentHistory = () => {
                             )
                           })}
                         </tbody>
-                      )}
+                      )} */}
                     </table>
                   </div>
-                  <nav aria-label='Page navigation example' className='mx-auto mt-5'>
+                  {/* <nav aria-label='Page navigation example' className='mx-auto mt-5'>
                     <ul className='flex items-center -space-x-px h-10 text-base justify-center'>
                       <button
                         onClick={() => handlePageChangeWitdraw(currentPageWitdraw - 1)}
@@ -558,7 +483,7 @@ const PaymentHistory = () => {
                         </svg>
                       </button>
                     </ul>
-                  </nav>
+                  </nav> */}
                 </div>
               )}
             </div>
