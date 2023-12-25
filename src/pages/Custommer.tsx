@@ -6,22 +6,19 @@ import { blockFrize, openFrize } from '~/apis/admin.api'
 import { deleteStaff, getAllStaff, searchUser } from '~/apis/product.api'
 import Loading from '~/components/Loading/Loading'
 import Modal from '~/components/Modal'
-import CreateStaff from '~/components/Modal/CreateStaff'
 import NotReSearch from '~/components/NotReSearch/NotReSearch'
 import Paginate from '~/components/Pagination/Paginate'
-import SearchHeader from '~/components/Search/Search'
 import usePagination from '~/hooks/usePagination'
 
 const Custommer = () => {
   const [staff, setStaff] = useState<any>([])
-  console.log(staff);
   const [search, setSearch] = useState<string>('')
   const { currentPage, totalPages, currentData, setCurrentPage } = usePagination(8, staff)
   const [showComment, setShowComment] = useState()
   const [isModalOpen, setModalOpen] = useState(false)
 
   const searchMutation = useMutation({
-    mutationFn: (email: string) => searchUser(email)
+    mutationFn: (id: string) => searchUser(id)
   })
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteStaff(id)
@@ -103,6 +100,7 @@ const Custommer = () => {
     e.preventDefault()
     searchMutation.mutate(search, {
       onSuccess: (data) => {
+        // console.log(data.data);
         setStaff(data.data)
         setCurrentPage(1)
       },
@@ -146,7 +144,7 @@ const Custommer = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className='block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                placeholder='Search...'
+                placeholder='Tìm theo Id tài khoản...'
               />
               <button
                 type='submit'
@@ -182,7 +180,10 @@ const Custommer = () => {
                           Username
                         </th>
                         <th scope='col' className='px-6 py-3'>
-                          Mã giới thiệu
+                          Id tài khoản
+                        </th>
+                        <th scope='col' className='px-6 py-3'>
+                          Id người giới thiệu
                         </th>
                         <th scope='col' className='px-6 py-3'>
                           Tên ngân hàng
@@ -255,6 +256,12 @@ const Custommer = () => {
                                 className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                               >
                                 {item.idUser}
+                              </th>
+                              <th
+                                scope='row'
+                                className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                              >
+                                {item.idRef}
                               </th>
                               <th
                                 scope='row'

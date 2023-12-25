@@ -80,6 +80,7 @@ const Users = () => {
   return (
     <>
       <SearchHeader
+        notShowSearch
         count={staff.length}
         search={search}
         setSearch={setSearch}
@@ -93,7 +94,7 @@ const Users = () => {
         ) : (
           <>
             {!searchMutation.isLoading && currentData.length === 0 ? (
-              <NotReSearch handleReset={handleReset} />
+              <NotReSearch />
             ) : (
               <>
                 <div className='relative flex-1 overflow-x-auto rounded-md shadow-md sm:rounded-lg'>
@@ -105,12 +106,6 @@ const Users = () => {
                         </th>
                         <th scope='col' className='px-6 py-3'>
                           Avatar
-                        </th>
-                        <th scope='col' className='px-6 py-3'>
-                          Email
-                        </th>
-                        <th scope='col' className='px-6 py-3'>
-                          Name
                         </th>
                         <th scope='col' className='px-6 py-3'>
                           User Name
@@ -165,18 +160,7 @@ const Users = () => {
                                   />
                                 )}
                               </th>
-                              <th
-                                scope='row'
-                                className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
-                              >
-                                {item.email}
-                              </th>
-                              <th
-                                scope='row'
-                                className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
-                              >
-                                {item.name}
-                              </th>
+
                               <th
                                 scope='row'
                                 className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'

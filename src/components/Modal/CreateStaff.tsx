@@ -21,16 +21,12 @@ const CreateStaff = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
     }
   }
 
-  const initialFromState: Staff = {
-    name: '',
+  const initialFromState = {
     username: '',
-    email: '',
-    password: '',
-    isStaff: true,
-    isAdmin: false
+    password: ''
   }
   const queryClient = useQueryClient()
-  const mutation = useMutation((body: Staff) => {
+  const mutation = useMutation((body: any) => {
     return createStaff(body)
   })
   const [formState, setFormState] = useState(initialFromState)
@@ -39,6 +35,7 @@ const CreateStaff = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
   }
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    console.log(formState);
     mutation.mutate(formState, {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['user', 3] })
@@ -57,9 +54,8 @@ const CreateStaff = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
       tabIndex={-1}
       aria-hidden='true'
       onClick={handleModalClick}
-      className={` ${
-        isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
-      } fixed bg-[#02020246] dark:bg-[#ffffff46] top-0 left-0 right-0 z-50 w-[100vw] p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[100vh] transition-all`}
+      className={` ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
+        } fixed bg-[#02020246] dark:bg-[#ffffff46] top-0 left-0 right-0 z-50 w-[100vw] p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[100vh] transition-all`}
     >
       <div
         ref={modalRef}
@@ -92,34 +88,8 @@ const CreateStaff = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
           <div className='px-6 py-6 lg:px-8'>
             <h3 className='mb-4 text-xl font-medium text-gray-900 dark:text-white'>Tạo nhân viên</h3>
             <form className='space-y-6' action='#' autoComplete='false' onSubmit={(e) => handleSubmit(e)}>
-              <div>
-                <label htmlFor='email' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
-                  Email
-                </label>
-                <input
-                  type='text'
-                  name='email'
-                  id='email'
-                  onChange={handleChange('email')}
-                  className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
-                  placeholder='Email'
-                  value={formState?.email}
-                />
-              </div>
-              <div>
-                <label htmlFor='name' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
-                  Tên
-                </label>
-                <input
-                  type='text'
-                  name='name'
-                  id='name'
-                  className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
-                  placeholder='Tên'
-                  value={formState?.name}
-                  onChange={handleChange('name')}
-                />
-              </div>
+
+
               <div>
                 <label htmlFor='username' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
                   Tài khoản
