@@ -17,6 +17,7 @@ import Payment from './pages/Payment'
 import Custommer from './pages/Custommer'
 import PaymentHistory from './pages/PaymentHistory'
 import Chat from './pages/Chat'
+import Settings from './pages/Settings'
 
 function ProtecedRoute() {
   const { isAuthenticated } = React.useContext(AppContext)
@@ -133,6 +134,14 @@ const useRouteElements = () => {
           element: (
             <AdminLayout title='Ngân hàng dùng để thanh toán'>
               <Payment />
+            </AdminLayout>
+          )
+        },
+        {
+          path: '/settings',
+          element: (
+            <AdminLayout title='Cài đặt chức năng'>
+              <Settings />
             </AdminLayout>
           )
         },
