@@ -28,16 +28,18 @@ const Header = () => {
     <div
       ref={modalRef}
       id='drawer-navigation'
-      className={`${showMenu ? 'mobile:translate-x-[0] ' : 'mobile:translate-x-[-100%] '
-        } dark:bg-gray-700 mobile:fixed non-scroll dark:border-none border-r border-gray-300 top-0 sticky left-0 z-40 h-screen p-4  transition-all  bg-white w-60 mobile:w-[240px]`}
+      className={`${
+        showMenu ? 'mobile:translate-x-[0] ' : 'mobile:translate-x-[-100%] '
+      } dark:bg-gray-700 mobile:fixed non-scroll dark:border-none border-r border-gray-300 top-0 sticky left-0 z-40 h-screen p-4  transition-all  bg-white w-60 mobile:w-[240px]`}
       tabIndex={-1}
       aria-labelledby='drawer-navigation-label'
     >
       <div
         id='drawer-navigation-label'
         style={{ textAlign: 'center' }}
-        className={` ${showMenu ? 'hidden' : ''
-          } text-blue-400 flex justify-between items-center text-base font-semibold uppercase dark:text-gray-400 `}
+        className={` ${
+          showMenu ? 'hidden' : ''
+        } text-blue-400 flex justify-between items-center text-base font-semibold uppercase dark:text-gray-400 `}
       >
         {profile?.isAdmin && <h2 style={{ margin: 'auto' }}>Admin</h2>}
         {profile?.isStaff && <h2 style={{ margin: 'auto' }}>Nhân viên</h2>}
@@ -65,35 +67,18 @@ const Header = () => {
             </li>
           )}
 
-          <li>
+          {/* <li>
             <Link
               to='/message'
               className='flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg pl-4 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700'
             >
               <button>Tin nhắn</button>
             </Link>
-          </li>
-          <li>
-            <Link
-              to='/payment'
-              className='flex gap-x-3 pl-4 items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
-            >
-              {/* <svg width="24" height="24" viewBox="0 0 24 24" fill="#A2A2A8" xmlns="http://www.w3.org/2000/svg">
-                <path fill="#A2A2A8" d="M7 9H17M7 13H17M21 20L17.6757 18.3378C17.4237 18.2118 17.2977 18.1488 17.1656 18.1044C17.0484 18.065 16.9277 18.0365 16.8052 18.0193C16.6672 18 16.5263 18 16.2446 18H6.2C5.07989 18 4.51984 18 4.09202 17.782C3.71569 17.5903 3.40973 17.2843 3.21799 16.908C3 16.4802 3 15.9201 3 14.8V7.2C3 6.07989 3 5.51984 3.21799 5.09202C3.40973 4.71569 3.71569 4.40973 4.09202 4.21799C4.51984 4 5.0799 4 6.2 4H17.8C18.9201 4 19.4802 4 19.908 4.21799C20.2843 4.40973 20.5903 4.71569 20.782 5.09202C21 5.51984 21 6.0799 21 7.2V20Z" />
-              </svg> */}
-              <div>Thanh toán</div>
-            </Link>
-          </li>
+          </li> */}
+
           {profile?.isAdmin && (
             <>
-              <li>
-                <Link
-                  to='/payment-history'
-                  className='flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg pl-4 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700'
-                >
-                  <button>Lịch sử</button>
-                </Link>
-              </li>
+             
               <li>
                 <Link
                   to='/user'
@@ -110,6 +95,26 @@ const Header = () => {
                   <button>Khách hàng</button>
                 </Link>
               </li>
+              <li>
+                <Link
+                  to='/payment-history'
+                  className='flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg pl-4 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700'
+                >
+                  <button>Lịch sử</button>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to='/payment'
+                  className='flex gap-x-3 pl-4 items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
+                >
+                  {/* <svg width="24" height="24" viewBox="0 0 24 24" fill="#A2A2A8" xmlns="http://www.w3.org/2000/svg">
+                <path fill="#A2A2A8" d="M7 9H17M7 13H17M21 20L17.6757 18.3378C17.4237 18.2118 17.2977 18.1488 17.1656 18.1044C17.0484 18.065 16.9277 18.0365 16.8052 18.0193C16.6672 18 16.5263 18 16.2446 18H6.2C5.07989 18 4.51984 18 4.09202 17.782C3.71569 17.5903 3.40973 17.2843 3.21799 16.908C3 16.4802 3 15.9201 3 14.8V7.2C3 6.07989 3 5.51984 3.21799 5.09202C3.40973 4.71569 3.71569 4.40973 4.09202 4.21799C4.51984 4 5.0799 4 6.2 4H17.8C18.9201 4 19.4802 4 19.908 4.21799C20.2843 4.40973 20.5903 4.71569 20.782 5.09202C21 5.51984 21 6.0799 21 7.2V20Z" />
+              </svg> */}
+                  <div>Cấu hình</div>
+                </Link>
+              </li>
+             
               {/* <li>
                 <Link
                   to='/chat'
