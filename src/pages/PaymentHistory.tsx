@@ -376,7 +376,7 @@ const PaymentHistory = () => {
                                   scope='row'
                                   className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                                 >
-                                  {item?.totalAmount}
+                                  {item?.totalAmount }
                                 </th>
                                 <th
                                   scope='row'
@@ -431,6 +431,15 @@ const PaymentHistory = () => {
                                     className='text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
                                   >
                                     Xác nhận
+                                  </button>
+                                  <button
+                                    type='button'
+                                    onClick={() => {
+                                      handleUpdate(item._id)
+                                    }}
+                                    className='text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
+                                  >
+                                    Huỷ
                                   </button>
                                 </th>
                               </tr>
