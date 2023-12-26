@@ -38,11 +38,11 @@ const PaymentHistory = () => {
       setCurrentPage(page)
     }
   }
-  // const handlePageChangeWitdraw = (page: number) => {
-  //   if (page >= 1 && page <= totalPagesWitdraw) {
-  //     setCurrentPageWitdraw(page)
-  //   }
-  // }
+  const handlePageChange2 = (page: number) => {
+    if (page >= 1 && page <= totalPages2) {
+      setCurrentPage2(page)
+    }
+  }
   const [search, setSearch] = useState<string>('')
 
   const handleSearch = (e: any) => {
@@ -51,6 +51,15 @@ const PaymentHistory = () => {
       searchMutation.mutate(search, {
         onSuccess: (data) => {
           setRecharge(data.data)
+        },
+        onError: (error: unknown) => {
+          console.log(error)
+        }
+      })
+    } else {
+      searchMutations.mutate(search, {
+        onSuccess: (data) => {
+          setRecharges(data.data)
         },
         onError: (error: unknown) => {
           console.log(error)
@@ -70,7 +79,7 @@ const PaymentHistory = () => {
   })
 
   const [dataRecharges, setRecharges] = useState<any>([])
-  const { isLoading: isLoadingOptions } = useQuery({
+  useQuery({
     queryKey: ['admin-all-history'],
     queryFn: () => {
       return getWithrowRecharges({})
@@ -84,6 +93,12 @@ const PaymentHistory = () => {
   const startIndex = (currentPage - 1) * itemsPerPage
   const endIndex = startIndex + itemsPerPage
   const currentData = dataRecharge.slice(startIndex, endIndex)
+
+  const [currentPage2, setCurrentPage2] = useState(1)
+  const totalPages2 = Math.ceil(dataRecharges.length / itemsPerPage)
+  const startIndex2 = (currentPage2 - 1) * itemsPerPage
+  const endIndex2 = startIndex2 + itemsPerPage
+  const currentData2 = dataRecharges.slice(startIndex2, endIndex2)
   return (
     <>
       <div className='flex justify-between mb-3 mobile:flex-col tablet:flex-col'>
@@ -324,16 +339,10 @@ const PaymentHistory = () => {
                             STT
                           </th>
                           <th scope='col' className='px-6 py-3'>
-                            Mã rút
-                          </th>
-                          <th scope='col' className='px-6 py-3'>
-                            Tiền rút
+                            Điểm rút
                           </th>
                           <th scope='col' className='px-6 py-3'>
                             UserId
-                          </th>
-                          <th scope='col' className='px-6 py-3'>
-                            Email
                           </th>
                           <th scope='col' className='px-6 py-3'>
                             Số tài khoản
@@ -352,9 +361,9 @@ const PaymentHistory = () => {
                           </th>
                         </tr>
                       </thead>
-                      {dataRecharges?.length !== 0 && (
+                      {currentData2?.length !== 0 && (
                         <tbody>
-                          {dataRecharges?.map((item: any, idx: number) => {
+                          {currentData2?.map((item: any, idx: number) => {
                             return (
                               <tr
                                 key={item._id}
@@ -370,25 +379,13 @@ const PaymentHistory = () => {
                                   scope='row'
                                   className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                                 >
-                                  {item?.codeOder}
-                                </th>
-                                <th
-                                  scope='row'
-                                  className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
-                                >
-                                  ${item?.totalAmount}
+                                  {item?.totalAmount}
                                 </th>
                                 <th
                                   scope='row'
                                   className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                                 >
                                   {item?.userId?.idUser}
-                                </th>
-                                <th
-                                  scope='row'
-                                  className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
-                                >
-                                  {item?.userId?.email}
                                 </th>
                                 <th
                                   scope='row'
@@ -440,10 +437,10 @@ const PaymentHistory = () => {
                       )}
                     </table>
                   </div>
-                  {/* <nav aria-label='Page navigation example' className='mx-auto mt-5'>
+                  <nav aria-label='Page navigation example' className='mx-auto mt-5'>
                     <ul className='flex items-center -space-x-px h-10 text-base justify-center'>
                       <button
-                        onClick={() => handlePageChangeWitdraw(currentPageWitdraw - 1)}
+                        onClick={() => handlePageChange2(currentPage2 - 1)}
                         className='flex items-center justify-center px-4 h-10 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
                       >
                         <span className='sr-only'>Previous</span>
@@ -463,12 +460,12 @@ const PaymentHistory = () => {
                           />
                         </svg>
                       </button>
-                      {Array.from({ length: totalPagesWitdraw }, (_, index) => (
+                      {Array.from({ length: totalPages2 }, (_, index) => (
                         <button
                           key={index}
-                          onClick={() => handlePageChangeWitdraw(index + 1)}
+                          onClick={() => handlePageChange2(index + 1)}
                           className={
-                            currentPageWitdraw === index + 1
+                            currentPage2 === index + 1
                               ? 'z-10 flex items-center justify-center px-4 h-10 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white'
                               : 'flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
                           }
@@ -477,7 +474,7 @@ const PaymentHistory = () => {
                         </button>
                       ))}
                       <button
-                        onClick={() => handlePageChangeWitdraw(currentPageWitdraw + 1)}
+                        onClick={() => handlePageChange2(currentPage2 + 1)}
                         className='flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
                       >
                         <span className='sr-only'>Next</span>
@@ -498,7 +495,7 @@ const PaymentHistory = () => {
                         </svg>
                       </button>
                     </ul>
-                  </nav> */}
+                  </nav>
                 </div>
               )}
             </div>

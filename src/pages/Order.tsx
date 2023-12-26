@@ -122,25 +122,25 @@ const Oders = () => {
                       STT
                     </th>
                     <th scope='col' className='px-6 py-3'>
-                      Mã đơn
+                      Mã phiên
                     </th>
                     <th scope='col' className='px-6 py-3'>
-                      Name
+                      Mã hàng
                     </th>
                     <th scope='col' className='px-6 py-3'>
-                      Email
+                      Id User
                     </th>
                     <th scope='col' className='px-6 py-3'>
-                      phone
+                      Tổng cược
                     </th>
                     <th scope='col' className='px-6 py-3'>
-                      Tổng tiền
+                      Thành tiền
                     </th>
                     <th scope='col' className='px-6 py-3'>
-                      Ghi chú
+                      Trạng thái
                     </th>
                     <th scope='col' className='px-6 py-3'>
-                      Địa chỉ
+                      Ngày cược
                     </th>
                     <th scope='col' className='px-6 py-3'>
                       Hành động

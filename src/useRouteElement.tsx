@@ -146,6 +146,14 @@ const useRouteElements = () => {
           )
         },
         {
+          path: '/orders',
+          element: (
+            <AdminLayout title='Lịch sử đặt hàng'>
+              <Oders />
+            </AdminLayout>
+          )
+        },
+        {
           path: '/payment-history',
           element: (
             <AdminLayout title='Lịch sử giao dịch'>
