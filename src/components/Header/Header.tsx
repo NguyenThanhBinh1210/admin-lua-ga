@@ -28,18 +28,16 @@ const Header = () => {
     <div
       ref={modalRef}
       id='drawer-navigation'
-      className={`${
-        showMenu ? 'mobile:translate-x-[0] ' : 'mobile:translate-x-[-100%] '
-      } dark:bg-gray-700 mobile:fixed non-scroll dark:border-none border-r border-gray-300 top-0 sticky left-0 z-40 h-screen p-4  transition-all  bg-white w-60 mobile:w-[240px]`}
+      className={`${showMenu ? 'mobile:translate-x-[0] ' : 'mobile:translate-x-[-100%] '
+        } dark:bg-gray-700 mobile:fixed non-scroll dark:border-none border-r border-gray-300 top-0 sticky left-0 z-40 h-screen p-4  transition-all  bg-white w-60 mobile:w-[240px]`}
       tabIndex={-1}
       aria-labelledby='drawer-navigation-label'
     >
       <div
         id='drawer-navigation-label'
         style={{ textAlign: 'center' }}
-        className={` ${
-          showMenu ? 'hidden' : ''
-        } text-blue-400 flex justify-between items-center text-base font-semibold uppercase dark:text-gray-400 `}
+        className={` ${showMenu ? 'hidden' : ''
+          } text-blue-400 flex justify-between items-center text-base font-semibold uppercase dark:text-gray-400 `}
       >
         {profile?.isAdmin && <h2 style={{ margin: 'auto' }}>Admin</h2>}
         {profile?.isStaff && <h2 style={{ margin: 'auto' }}>Nhân viên</h2>}
@@ -78,7 +76,7 @@ const Header = () => {
 
           {profile?.isAdmin && (
             <>
-             
+
               <li>
                 <Link
                   to='/user'
@@ -105,7 +103,7 @@ const Header = () => {
               </li>
               <li>
                 <Link
-                  to='/payment'
+                  to='/settings'
                   className='flex gap-x-3 pl-4 items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
                 >
                   {/* <svg width="24" height="24" viewBox="0 0 24 24" fill="#A2A2A8" xmlns="http://www.w3.org/2000/svg">
@@ -114,7 +112,7 @@ const Header = () => {
                   <div>Cấu hình</div>
                 </Link>
               </li>
-             
+
               {/* <li>
                 <Link
                   to='/chat'
