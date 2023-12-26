@@ -2,7 +2,7 @@
 import moment from 'moment'
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { getRecharges } from '~/apis/admin.api'
+import { getRecharges, getWithrowRecharges } from '~/apis/admin.api'
 import { UpdateHistory } from '~/apis/payment.api'
 import CreatePayment from '~/components/Modal/CreatePayment'
 
@@ -24,6 +24,10 @@ const PaymentHistory = () => {
 
   const searchMutation = useMutation({
     mutationFn: (userId: string) => getRecharges({ userId: userId })
+  })
+
+  const searchMutations = useMutation({
+    mutationFn: (userId: string) => getWithrowRecharges({ userId: userId })
   })
 
   const updateMutation = useMutation({
@@ -62,6 +66,17 @@ const PaymentHistory = () => {
     },
     onSuccess: (data) => {
       setRecharge(data.data)
+    }
+  })
+
+  const [dataRecharges, setRecharges] = useState<any>([])
+  const { isLoading: isLoadingOptions } = useQuery({
+    queryKey: ['admin-all-history'],
+    queryFn: () => {
+      return getWithrowRecharges({})
+    },
+    onSuccess: (data) => {
+      setRecharges(data.data)
     }
   })
   const [currentPage, setCurrentPage] = useState(1)
@@ -337,9 +352,9 @@ const PaymentHistory = () => {
                           </th>
                         </tr>
                       </thead>
-                      {/* {currentDataWitdraw?.length !== 0 && (
+                      {dataRecharges?.length !== 0 && (
                         <tbody>
-                          {currentDataWitdraw?.map((item: any, idx: number) => {
+                          {dataRecharges?.map((item: any, idx: number) => {
                             return (
                               <tr
                                 key={item._id}
@@ -422,7 +437,7 @@ const PaymentHistory = () => {
                             )
                           })}
                         </tbody>
-                      )} */}
+                      )}
                     </table>
                   </div>
                   {/* <nav aria-label='Page navigation example' className='mx-auto mt-5'>

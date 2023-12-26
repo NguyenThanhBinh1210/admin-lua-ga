@@ -9,4 +9,5 @@ export const updateProduct = (id: unknown, params: any) => http.put(`/product/up
 
 export const createRecharge = (body: any) => http.post(`/v1/wallet/add`, body)
 export const getRecharges = (params: any) => http.get(`/v1/wallet/all-history`, { params })
+export const getWithrowRecharges = (params: any) => http.get(`/v1/wallet/admin-all-history`, { params })
 export const getAllInOne = () => http.get(`/v1/wallet/all-inf`)
