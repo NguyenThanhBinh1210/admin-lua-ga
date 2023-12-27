@@ -48,7 +48,7 @@ export const updateProfile = (body: any) => upload.patch('/v1/user/update', body
 export const updateConfig = (body: { title: string; price: number; url_tele: string; content: string[] }) =>
   http.post('/config/update', body)
 export const getAllStaff = () => http.get('v1/user/get-all-staff')
-export const getAllOrder = () => http.get('v1/order/get-order')
+export const getAllOrder = () => http.get('v1/order/get-all')
 export const searchOrder = (name: string) => http.get(`/v1/order/search?name=${name}`)
 export const deleteOrder = (id: string) => http.delete(`v1/order/delete/${id}`)
 export const searchCategory = (name: string) => http.get(`/v1/category/search?nameCategory=${name}`)

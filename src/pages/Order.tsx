@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react'
+import moment from 'moment'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
 import { deleteOrder, getAllOrder, searchOrder } from '~/apis/product.api'
@@ -8,20 +9,41 @@ import ShowOrder from '~/components/Modal/ShowOrder'
 import Paginate from '~/components/Pagination/Paginate'
 import { FormatNumber } from '~/hooks/useFormatNumber'
 import usePagination from '~/hooks/usePagination'
-
+import { getTiso } from '~/apis/setting.api'
 const Oders = () => {
+  const [tiso, setTiso] = useState<any>()
   const [staff, setStaff] = useState<any>([])
   const [count, setCount] = useState<any>([])
   const [search, setSearch] = useState<string>('')
   const { currentPage, totalPages, currentData, setCurrentPage } = usePagination(8, staff)
   const [showComment, setShowComment] = useState()
   const [isModalOpen, setModalOpen] = useState(false)
+  useQuery({
+    queryKey: ['get-tisos'],
+    queryFn: () => {
+      return getTiso()
+    },
+    onSuccess: (data) => {
+      setTiso(data.data[0].money)
+    }
+  })
   const searchMutation = useMutation({
     mutationFn: (email: string) => searchOrder(email)
   })
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteOrder(id)
   })
+  const updateMutations = useMutation({
+    // mutationFn: ({ id, status }: { id: string; status: string }) => UpdateOrdertHistory(id, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries('update-all-historys')
+    }
+  })
+
+  const handleUpdate = (id: string, status: string) => {
+    // updateMutations.mutate({ id, status })
+  }
+
   const queryClient = useQueryClient()
   const handledeleteOrder = (id: string) => {
     deleteMutation.mutate(id, {
@@ -40,8 +62,8 @@ const Oders = () => {
       return getAllOrder()
     },
     onSuccess: (data) => {
-      setStaff(data.data.orders)
-      setCount(data.data)
+      setStaff(data.data.history)
+      // setCount(data.data)
     },
     cacheTime: 30000
   })
@@ -149,7 +171,7 @@ const Oders = () => {
                 </thead>
                 {staff.length !== 0 && (
                   <tbody>
-                    {currentData.map((item: any, idx: number) => {
+                    {staff.map((item: any, idx: number) => {
                       return (
                         <tr
                           key={item._id}
@@ -165,43 +187,59 @@ const Oders = () => {
                             scope='row'
                             className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
-                            {item.code}
+                            {item.codeOrder}
                           </th>
                           <th
                             scope='row'
                             className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
-                            {item.name}
+                            {item.randomNumber}
                           </th>
                           <th
                             scope='row'
                             className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
-                            {item.email}
+                            {item.idUser}
                           </th>
                           <th
                             scope='row'
                             className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
-                            {item.phone}
+                            {item.countNum}
                           </th>
                           <th
                             scope='row'
                             className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
-                            ${FormatNumber(item.Sum)}
+                            {new Intl.NumberFormat('vi-VN', {
+                              style: 'currency',
+                              currency: 'VND',
+                              minimumFractionDigits: 0
+                            }).format(item.countNum * (tiso as number))}
                           </th>
                           <th
                             scope='row'
                             className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
-                            {item.note}
+                            <span
+                              className={`${
+                                item?.status === 'pending'
+                                  ? 'bg-yellow-500'
+                                  : item?.status === 'done'
+                                  ? 'bg-green-500'
+                                  : item?.status === 'false'
+                                  ? 'bg-red-500'
+                                  : ''
+                              } text-white px-2 py-0.5 pb-1 text-xs rounded-md`}
+                            >
+                              {item?.status}
+                            </span>
                           </th>
                           <th
                             scope='row'
                             className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
-                            {item.address}
+                            {moment(item?.createdAt).format('DD/MM/YYYY')}
                           </th>
                           <th
                             scope='row'
@@ -210,17 +248,36 @@ const Oders = () => {
                             <button
                               type='button'
                               onClick={() => {
-                                setShowComment(item)
-                                setModalOpen(true)
+                                handleUpdate(item._id, 'done')
                               }}
                               className='text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
                             >
-                              Xem
+                              Thắng
                             </button>
                             <button
                               type='button'
-                              onClick={() => handledeleteOrder(item._id)}
-                              className='text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900'
+                              onClick={() => {
+                                handleUpdate(item._id, 'false')
+                              }}
+                              className='text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
+                            >
+                              Thua
+                            </button>
+                            <button
+                              type='button'
+                              onClick={() => {
+                                handleUpdate(item._id, 'done')
+                              }}
+                              className='text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
+                            >
+                              Huỷ
+                            </button>
+                            <button
+                              type='button'
+                              onClick={() => {
+                                handleUpdate(item._id, 'false')
+                              }}
+                              className='text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
                             >
                               Xoá
                             </button>
