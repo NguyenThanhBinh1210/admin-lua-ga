@@ -232,8 +232,10 @@ const Oders = () => {
                                   ? 'bg-yellow-500'
                                   : item?.status === 'done'
                                   ? 'bg-green-500'
-                                  : item?.status === 'false'
+                                  : item?.status === 'lost'
                                   ? 'bg-red-500'
+                                  : item?.status === 'false'
+                                  ? 'bg-blue-500'
                                   : ''
                               } text-white px-2 py-0.5 pb-1 text-xs rounded-md`}
                             >
@@ -255,7 +257,7 @@ const Oders = () => {
                               onClick={() => {
                                 handleUpdate(item._id, 'done')
                               }}
-                              className='text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
+                              className='text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
                             >
                               Thắng
                             </button>
