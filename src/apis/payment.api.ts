@@ -10,4 +10,8 @@ export const updatePayment = (id: string, body: any) =>
 export const createPayment = (body: any) => upload.post('v1/payment-admin/create', body)
 
 export const AllHistory = (params: any) => http.get('/v1/wallet/all-history', { params })
+export const UpdateWalletHistory = (id: any, status: string) => {
+  return http.patch(`/v1/wallet/update-all-history/${id}`, { status })
+}
+
 export const UpdateHistory = (id: any) => http.patch(`/v1/wallet/update-history?id=${id}`)
