@@ -13,5 +13,9 @@ export const AllHistory = (params: any) => http.get('/v1/wallet/all-history', { 
 export const UpdateWalletHistory = (id: any, status: string) => {
   return http.patch(`/v1/wallet/update-all-history/${id}`, { status })
 }
+export const UpdateOrdertHistory = (id: any, status: string) => {
+  return http.patch(`/v1/order/update-order-user/${id}`, { status })
+}
+
 
 export const UpdateHistory = (id: any) => http.patch(`/v1/wallet/update-history?id=${id}`)

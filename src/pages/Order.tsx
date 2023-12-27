@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from 'react'
+import { useState,useEffect } from 'react'
 import moment from 'moment'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
@@ -10,6 +10,7 @@ import Paginate from '~/components/Pagination/Paginate'
 import { FormatNumber } from '~/hooks/useFormatNumber'
 import usePagination from '~/hooks/usePagination'
 import { getTiso } from '~/apis/setting.api'
+import { UpdateHistory, UpdateOrdertHistory } from '~/apis/payment.api'
 const Oders = () => {
   const [tiso, setTiso] = useState<any>()
   const [staff, setStaff] = useState<any>([])
@@ -34,14 +35,14 @@ const Oders = () => {
     mutationFn: (id: string) => deleteOrder(id)
   })
   const updateMutations = useMutation({
-    // mutationFn: ({ id, status }: { id: string; status: string }) => UpdateOrdertHistory(id, status),
+    mutationFn: ({ id, status }: { id: string; status: string }) => UpdateOrdertHistory(id, status),
     onSuccess: () => {
-      queryClient.invalidateQueries('update-all-historys')
+      queryClient.invalidateQueries('update-order-historys')
     }
   })
 
   const handleUpdate = (id: string, status: string) => {
-    // updateMutations.mutate({ id, status })
+    updateMutations.mutate({ id, status })
   }
 
   const queryClient = useQueryClient()
@@ -56,14 +57,18 @@ const Oders = () => {
       }
     })
   }
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      queryClient.invalidateQueries(['orders', 3])
+    }, 3000)
+    return () => clearInterval(intervalId)
+  }, [queryClient])
+
   const { isLoading: isLoadingUser } = useQuery({
     queryKey: ['orders', 3],
-    queryFn: () => {
-      return getAllOrder()
-    },
+    queryFn: () => getAllOrder(),
     onSuccess: (data) => {
       setStaff(data.data.history)
-      // setCount(data.data)
     },
     cacheTime: 30000
   })
@@ -257,7 +262,7 @@ const Oders = () => {
                             <button
                               type='button'
                               onClick={() => {
-                                handleUpdate(item._id, 'false')
+                                handleUpdate(item._id, 'lost')
                               }}
                               className='text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
                             >
@@ -266,7 +271,7 @@ const Oders = () => {
                             <button
                               type='button'
                               onClick={() => {
-                                handleUpdate(item._id, 'done')
+                                handleUpdate(item._id, 'false')
                               }}
                               className='text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
                             >
@@ -275,9 +280,9 @@ const Oders = () => {
                             <button
                               type='button'
                               onClick={() => {
-                                handleUpdate(item._id, 'false')
+                                handleUpdate(item._id, 'delete')
                               }}
-                              className='text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
+                              className='text-white bg-gray-700 hover:bg-gray-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
                             >
                               Xoá
                             </button>
