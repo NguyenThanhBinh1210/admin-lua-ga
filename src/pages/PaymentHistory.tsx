@@ -7,13 +7,16 @@ import { getTiso } from '~/apis/setting.api'
 import { UpdateHistory, UpdateWalletHistory } from '~/apis/payment.api'
 import CreatePayment from '~/components/Modal/CreatePayment'
 import { FormatNumber } from '~/hooks/useFormatNumber'
+import ConfirmModal from '~/components/Modal/ConfirmModal'
 
 const PaymentHistory = () => {
   const queryClient = useQueryClient()
   const [tiso, setTiso] = useState<any>()
   const [showComment, setShowComment] = useState<any | null>(null)
+  const [datas, setDatas] = useState<any | null>(null)
   const [isModalOpen, setModalOpen] = useState(false)
   const [isModalOpenCreate, setModalOpenCreate] = useState(false)
+  const [showLyDo, setShowLyDo] = useState(false)
   const [type, setType] = useState(0)
 
   const itemsPerPage = 8
@@ -102,16 +105,16 @@ const PaymentHistory = () => {
       return getWithrowRecharges({})
     },
     onSuccess: (data) => {
-      console.log(data.data);
+      console.log(data.data)
       setRecharges(data.data)
     }
   })
   useEffect(() => {
     const intervalId = setInterval(() => {
-      queryClient.invalidateQueries('admin-all-history');
-    }, 3000);
-    return () => clearInterval(intervalId);
-  }, [queryClient]);
+      queryClient.invalidateQueries('admin-all-history')
+    }, 3000)
+    return () => clearInterval(intervalId)
+  }, [queryClient])
   const [currentPage, setCurrentPage] = useState(1)
   const totalPages = Math.ceil(dataRecharge.length / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage
@@ -193,8 +196,16 @@ const PaymentHistory = () => {
           <>
             <div className='flex justify-between'>
               <div>
-                {type === 0 && <h1 className='text-xl font-semibold mb-2'>Số giao dịch Nạp: {dataRecharge.length}</h1>}
-                {type === 1 && <h1 className='text-xl font-semibold mb-2'>Số giao dịch Rút: {dataRecharge.length}</h1>}
+                {type === 0 && (
+                  <h1 className='text-xl font-semibold mb-2 dark:text-white'>
+                    Số giao dịch Nạp: {dataRecharge.length}
+                  </h1>
+                )}
+                {type === 1 && (
+                  <h1 className='text-xl font-semibold mb-2 dark:text-white'>
+                    Số giao dịch Rút: {dataRecharges.length}
+                  </h1>
+                )}
               </div>
               <div className='flex gap-x-3 '>
                 <button
@@ -460,24 +471,45 @@ const PaymentHistory = () => {
                                   scope='row'
                                   className='px-6 py-3 w-[200px] flex items-center gap-x-2 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                                 >
-                                  <button
-                                    type='button'
-                                    onClick={() => {
-                                      handleUpdate(item._id, 'done')
-                                    }}
-                                    className='text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
-                                  >
-                                    Xác nhận
-                                  </button>
-                                  <button
-                                    type='button'
-                                    onClick={() => {
-                                      handleUpdate(item._id, 'false')
-                                    }}
-                                    className='text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
-                                  >
-                                    Huỷ
-                                  </button>
+                                  {item.status === 'pending' && (
+                                    <button
+                                      type='button'
+                                      onClick={() => {
+                                        handleUpdate(item._id, 'done')
+                                      }}
+                                      className='text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
+                                    >
+                                      Xác nhận
+                                    </button>
+                                  )}
+                                  {item.status !== 'done' && (
+                                    <>
+                                      {item.nfo === '' && (
+                                        <button
+                                          type='button'
+                                          onClick={() => {
+                                            setShowLyDo(true)
+                                            setDatas(item)
+                                          }}
+                                          className='text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900'
+                                        >
+                                          Huỷ
+                                        </button>
+                                      )}
+                                      {item.nfo !== '' && (
+                                        <button
+                                          type='button'
+                                          onClick={() => {
+                                            setShowLyDo(true)
+                                            setDatas(item)
+                                          }}
+                                          className='text-white bg-purple-700 hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900'
+                                        >
+                                          Lý do
+                                        </button>
+                                      )}
+                                    </>
+                                  )}
                                 </th>
                               </tr>
                             )
@@ -560,6 +592,7 @@ const PaymentHistory = () => {
           setShowComment(null)
         }}
       />
+      <ConfirmModal data={datas} isOpen={showLyDo} onClose={() => setShowLyDo(false)}></ConfirmModal>
     </>
   )
 }
