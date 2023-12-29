@@ -35,7 +35,7 @@ export const createKey = (body: { date: number; username: string }) => http.post
 export const createStaff = (body: Staff) => http.post('v1/user/register-staff', body)
 export const createCategory = (body: any) => http.post('v1/category/create', body)
 export const createProduct = (body: any) => upload.post('v1/product/create', body)
-export const updateStaff = (userId: string, body: any) => upload.patch(`v1/user/${userId}`, body)
+export const updateStaff = (userId: string, body: any) => http.patch(`v1/user/${userId}`, body)
 export const updateProduct = (id: string, body: any) => upload.patch(`v1/product/update/${id}`, body)
 export const updateCategory = (id: string, body: any) => http.patch(`v1/category/update/${id}`, body)
 export const getAllComment = (params?: unknown) => http.get('/v1/comment/get-all-comment', { params })

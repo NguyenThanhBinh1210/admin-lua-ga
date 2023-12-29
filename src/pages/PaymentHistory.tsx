@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import moment from 'moment'
-import { useState,useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { getRecharges, getWithrowRecharges } from '~/apis/admin.api'
 import { getTiso } from '~/apis/setting.api'
 import { UpdateHistory, UpdateWalletHistory } from '~/apis/payment.api'
 import CreatePayment from '~/components/Modal/CreatePayment'
+import { FormatNumber } from '~/hooks/useFormatNumber'
 
 const PaymentHistory = () => {
   const queryClient = useQueryClient()
@@ -198,21 +199,19 @@ const PaymentHistory = () => {
               <div className='flex gap-x-3 '>
                 <button
                   onClick={() => setType(0)}
-                  className={`w-[100px] cursor-pointer h-[40px] rounded-lg ${
-                    type === 0
-                      ? ' bg-blue-600 text-white '
-                      : ' ring-1 ring-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white '
-                  }  flex transition-all items-center justify-center `}
+                  className={`w-[100px] cursor-pointer h-[40px] rounded-lg ${type === 0
+                    ? ' bg-blue-600 text-white '
+                    : ' ring-1 ring-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white '
+                    }  flex transition-all items-center justify-center `}
                 >
                   Lịch sử nạp
                 </button>
                 <button
                   onClick={() => setType(1)}
-                  className={`w-[100px] cursor-pointer h-[40px] rounded-lg ${
-                    type === 1
-                      ? ' bg-blue-600 text-white '
-                      : ' ring-1 ring-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white '
-                  }  flex transition-all items-center justify-center `}
+                  className={`w-[100px] cursor-pointer h-[40px] rounded-lg ${type === 1
+                    ? ' bg-blue-600 text-white '
+                    : ' ring-1 ring-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white '
+                    }  flex transition-all items-center justify-center `}
                 >
                   Lịch sử rút
                 </button>
@@ -273,9 +272,8 @@ const PaymentHistory = () => {
                                   className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                                 >
                                   <span
-                                    className={` ${
-                                      item?.status === 'pending' ? 'bg-green-500' : 'bg-green'
-                                    } text-white px-2 py-0.5 pb-1 text-xs rounded-md`}
+                                    className={` ${item?.status === 'pending' ? 'bg-green-500' : 'bg-green'
+                                      } text-white px-2 py-0.5 pb-1 text-xs rounded-md`}
                                   >
                                     Done
                                   </span>
@@ -364,9 +362,7 @@ const PaymentHistory = () => {
                           <th scope='col' className='px-6 py-3'>
                             STT
                           </th>
-                          <th scope='col' className='px-6 py-3'>
-                            Điểm rút
-                          </th>
+
                           <th scope='col' className='px-6 py-3'>
                             Số tiền
                           </th>
@@ -415,9 +411,9 @@ const PaymentHistory = () => {
                                   scope='row'
                                   className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                                 >
-                                  {item?.totalAmount}
+                                  {FormatNumber(item?.totalAmount)}₫
                                 </th>
-                                <th
+                                {/* <th
                                   scope='row'
                                   className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                                 >
@@ -426,7 +422,7 @@ const PaymentHistory = () => {
                                     currency: 'VND',
                                     minimumFractionDigits: 0
                                   }).format(item.totalAmount * (tiso as number))}
-                                </th>
+                                </th> */}
                                 <th
                                   scope='row'
                                   className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
@@ -451,15 +447,14 @@ const PaymentHistory = () => {
                                   className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                                 >
                                   <span
-                                    className={`${
-                                      item?.status === 'pending'
-                                        ? 'bg-yellow-500'
-                                        : item?.status === 'done'
+                                    className={`${item?.status === 'pending'
+                                      ? 'bg-yellow-500'
+                                      : item?.status === 'done'
                                         ? 'bg-green-500'
                                         : item?.status === 'false'
-                                        ? 'bg-red-500'
-                                        : ''
-                                    } text-white px-2 py-0.5 pb-1 text-xs rounded-md`}
+                                          ? 'bg-red-500'
+                                          : ''
+                                      } text-white px-2 py-0.5 pb-1 text-xs rounded-md`}
                                   >
                                     {item?.status}
                                   </span>
