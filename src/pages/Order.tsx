@@ -29,7 +29,7 @@ const Oders = () => {
     }
   })
   const searchMutation = useMutation({
-    mutationFn: (email: string) => searchOrder(email)
+    mutationFn: (idUser: string) => searchOrder(idUser)
   })
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteOrder(id)
@@ -58,11 +58,13 @@ const Oders = () => {
     })
   }
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      queryClient.invalidateQueries(['orders', 3])
-    }, 3000)
-    return () => clearInterval(intervalId)
-  }, [queryClient])
+    if (search === '') {
+      const intervalId = setInterval(() => {
+        queryClient.invalidateQueries(['orders', 3])
+      }, 3000)
+      return () => clearInterval(intervalId)
+    }
+  }, [queryClient, search])
 
   const { isLoading: isLoadingUser } = useQuery({
     queryKey: ['orders', 3],
@@ -81,7 +83,7 @@ const Oders = () => {
     e.preventDefault()
     searchMutation.mutate(search, {
       onSuccess: (data) => {
-        setStaff(data.data)
+        setStaff(data.data.history)
         setCurrentPage(1)
       },
       onError: () => {
