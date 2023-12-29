@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useMutation, useQuery } from 'react-query'
+import { toast } from 'react-toastify'
 import {
   getCountDown,
   getTiso,
@@ -8,14 +9,18 @@ import {
   updateRandomProduct,
   updateRandomFaction,
   getRandomProduct,
-  getRandomFaction
+  getRandomFaction,
+  getGioiHan,
+  updateGioiHan,
 } from '~/apis/setting.api'
 const Settings = () => {
   const [cowndown, setCoundown] = useState<any>()
   const [tiso, setTiso] = useState<any>()
   const [show1, setShow1] = useState<boolean>(false)
   const [show2, setShow2] = useState<boolean>(false)
+  const [show3, setShow3] = useState<boolean>(false)
   const [product, setProduct] = useState<any>()
+  const [gioihan, setGioihan] = useState<any>()
   const [faction, setFaction] = useState<any>()
 
   useQuery({
@@ -26,6 +31,15 @@ const Settings = () => {
     onSuccess: (data) => {
       console.log('faction', data.data.number)
       setFaction(data.data.number)
+    }
+  })
+  useQuery({
+    queryKey: ['get-gioi-han'],
+    queryFn: () => {
+      return getGioiHan()
+    },
+    onSuccess: (data) => {
+      setGioihan(data.data.number)
     }
   })
 
@@ -69,6 +83,9 @@ const Settings = () => {
   const mutationUpdateCountDown = useMutation((body: any) => {
     return updateCountDown(body)
   })
+  const mutationUpdateGioiHan = useMutation((body: any) => {
+    return updateGioiHan(body)
+  })
   const handleUpdateTiso = () => {
     const body = {
       money: tiso
@@ -104,7 +121,7 @@ const Settings = () => {
     }
     mutationUpdateFaction.mutate(body, {
       onSuccess: () => {
-        console.log(body), alert('Thay đổi tỉ lệ thành công!')
+        alert('Thay đổi tỉ lệ thành công!')
         setShow1(false)
         setFaction(product)
       },
@@ -124,6 +141,20 @@ const Settings = () => {
       },
       onError: () => {
         alert('Lỗi, hãy thử lại!')
+      }
+    })
+  }
+  const handleUpdateGioiHan = () => {
+    const body = {
+      number: gioihan
+    }
+    mutationUpdateGioiHan.mutate(body, {
+      onSuccess: () => {
+        toast.success('Cập nhật giới hạn tiền rút thành công!')
+        setShow3(false)
+      },
+      onError: () => {
+        toast.success('Lỗi, hãy thử lại!')
       }
     })
   }
@@ -159,7 +190,7 @@ const Settings = () => {
         </div>
       </div>
       <div className='col-span-4 tablet:col-span-2 mobile:col-span-4'>
-        <label htmlFor='time'>Thời gian đếm ngược</label>
+        <label htmlFor='time'>Thời gian đếm ngược (phút)</label>
         <div className='flex items-center gap-x-2 mt-2'>
           <input
             value={cowndown}
@@ -179,27 +210,47 @@ const Settings = () => {
           )}
         </div>
       </div>
-      {/* <div className='col-span-4 tablet:col-span-2 mobile:col-span-4'>
-        <label htmlFor='history'>Lịch sử hiển thị tối đa</label>
+      <div className='col-span-4 tablet:col-span-2 mobile:col-span-4'>
+        <label htmlFor='time'>Số tiền rút tối thiểu (đ)</label>
         <div className='flex items-center gap-x-2 mt-2'>
           <input
-            id='history'
+            value={gioihan}
+            onChange={(e) => {
+              setGioihan(e.target.value)
+              setShow3(true)
+            }}
+            id='time'
             type='text'
-            placeholder='dòng'
+            placeholder='đ'
             className='text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none  bg-transparent'
           />
+          {show3 && (
+            <button onClick={handleUpdateGioiHan} className='bg-blue-500 py-3 px-5 rounded-lg text-white'>
+              Xác nhận
+            </button>
+          )}
         </div>
-      </div> */}
+      </div>
+
       <div className='col-span-4 tablet:col-span-2 mobile:col-span-4'>
         <label htmlFor='radom'>Tỉ lệ random faction</label>
         <div className='flex items-center gap-x-2 mt-2'>
           <button
             id='radom'
             placeholder='%'
-            className={`text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none   ${
-              faction === '0' ? 'bg-green-800 text-gray-50' : 'bg-transparent text-slate-950'
-            }`}
+            className={`text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none   ${faction === '0' ? 'bg-green-800 text-gray-50' : 'bg-transparent text-slate-950'
+              }`}
             onClick={() => handleUpdateFaction('0')}
+          >
+            {' '}
+            random
+          </button>
+          <button
+            id='radom'
+            placeholder='%'
+            className={`text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none ${faction === '1' ? 'bg-green-800 text-gray-50' : 'bg-transparent text-slate-950'
+              } `}
+            onClick={() => handleUpdateFaction('1')}
           >
             {' '}
             chẳn
@@ -207,24 +258,12 @@ const Settings = () => {
           <button
             id='radom'
             placeholder='%'
-            className={`text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none ${
-              faction === '1' ? 'bg-green-800 text-gray-50' : 'bg-transparent text-slate-950'
-            } `}
-            onClick={() => handleUpdateFaction('1')}
-          >
-            {' '}
-            lẻ
-          </button>
-          <button
-            id='radom'
-            placeholder='%'
-            className={`text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none  bg-transparent  ${
-              faction === '2' ? 'bg-green-800 text-gray-50' : 'bg-transparent text-slate-950'
-            }`}
+            className={`text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none  bg-transparent  ${faction === '2' ? 'bg-green-800 text-gray-50' : 'bg-transparent text-slate-950'
+              }`}
             onClick={() => handleUpdateFaction('2')}
           >
             {' '}
-            random
+            lẻ
           </button>
         </div>
       </div>
@@ -234,35 +273,31 @@ const Settings = () => {
           <button
             id='radom'
             placeholder='%'
-            className={`text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none  ${
-              product === '0' ? 'bg-green-800 text-gray-50' : 'bg-transparent text-slate-950'
-            }`}
+            className={`text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none  ${product === '0' ? 'bg-green-800 text-gray-50' : 'bg-transparent text-slate-950'
+              }`}
             onClick={() => handleUpdateProduct('0')}
           >
             {' '}
-            chẳn
+            random
           </button>
           <button
             id='radom'
             placeholder='%'
-            className={`text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none   ${
-              product === '1' ? 'bg-green-800 text-gray-50' : 'bg-transparent text-slate-950'
-            }`}
+            className={`text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none   ${product === '1' ? 'bg-green-800 text-gray-50' : 'bg-transparent text-slate-950'
+              }`}
             onClick={() => handleUpdateProduct('1')}
           >
             {' '}
-            lẻ
-          </button>
+            chẳn          </button>
           <button
             id='radom'
             placeholder='%'
-            className={`text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none   ${
-              product === '2' ? 'bg-green-800 text-gray-50' : 'bg-transparent text-slate-950'
-            }`}
+            className={`text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none   ${product === '2' ? 'bg-green-800 text-gray-50' : 'bg-transparent text-slate-950'
+              }`}
             onClick={() => handleUpdateProduct('2')}
           >
             {' '}
-            random
+            lẻ
           </button>
         </div>
       </div>
