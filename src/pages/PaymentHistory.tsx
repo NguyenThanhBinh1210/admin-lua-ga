@@ -104,11 +104,13 @@ const PaymentHistory = () => {
     }
   })
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      queryClient.invalidateQueries('admin-all-history')
-    }, 3000)
-    return () => clearInterval(intervalId)
-  }, [queryClient])
+    if (search === '') {
+      const intervalId = setInterval(() => {
+        queryClient.invalidateQueries('admin-all-history')
+      }, 3000)
+      return () => clearInterval(intervalId)
+    }
+  }, [queryClient, search])
   const [currentPage, setCurrentPage] = useState(1)
   const totalPages = Math.ceil(dataRecharge.length / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage
