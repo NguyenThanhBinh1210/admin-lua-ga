@@ -202,7 +202,7 @@ const Settings = () => {
             onClick={() => handleUpdateFaction('0')}
           >
             {' '}
-            chẳn
+            random
           </button>
           <button
             id='radom'
@@ -213,7 +213,7 @@ const Settings = () => {
             onClick={() => handleUpdateFaction('1')}
           >
             {' '}
-            lẻ
+            chẳn
           </button>
           <button
             id='radom'
@@ -224,7 +224,7 @@ const Settings = () => {
             onClick={() => handleUpdateFaction('2')}
           >
             {' '}
-            random
+            lẻ
           </button>
         </div>
       </div>
@@ -240,7 +240,7 @@ const Settings = () => {
             onClick={() => handleUpdateProduct('0')}
           >
             {' '}
-            chẳn
+            random
           </button>
           <button
             id='radom'
@@ -251,8 +251,7 @@ const Settings = () => {
             onClick={() => handleUpdateProduct('1')}
           >
             {' '}
-            lẻ
-          </button>
+            chẳn          </button>
           <button
             id='radom'
             placeholder='%'
@@ -262,7 +261,7 @@ const Settings = () => {
             onClick={() => handleUpdateProduct('2')}
           >
             {' '}
-            random
+            lẻ
           </button>
         </div>
       </div>
