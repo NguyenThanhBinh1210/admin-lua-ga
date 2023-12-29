@@ -198,7 +198,7 @@ const Modal = ({ isOpen, onClose, data }: any) => {
                     id='password'
                     className={`bg-gray-50 ${showChangePass ? 'w-full' : 'w-0'
                       }  transition-all duration-500 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white`}
-                    placeholder=''
+                    placeholder='Nhập mật khẩu vào đây để đổi'
                     value={formState?.password !== '' ? formState?.password : data?.password}
                     onChange={handleChange('password')}
                   />
