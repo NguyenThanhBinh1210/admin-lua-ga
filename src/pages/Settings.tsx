@@ -68,7 +68,7 @@ const Settings = () => {
       return getTiso()
     },
     onSuccess: (data) => {
-      setTiso(data.data[0].money)
+      setTiso(data.data[0].numberOder)
     }
   })
   const mutationUpdateTiso = useMutation((body: any) => {
@@ -88,11 +88,11 @@ const Settings = () => {
   })
   const handleUpdateTiso = () => {
     const body = {
-      money: tiso
+      numberOder: tiso
     }
     mutationUpdateTiso.mutate(body, {
       onSuccess: () => {
-        alert('Cập nhật tỉ số hối đoái thành công!')
+        alert('Cập nhật % phí giao dịch thành công!')
         setShow1(false)
       },
       onError: () => {
@@ -161,16 +161,8 @@ const Settings = () => {
   return (
     <div className='grid grid-cols-4 gap-5'>
       <div className='col-span-4 tablet:col-span-2 mobile:col-span-4'>
-        <label htmlFor='tiso'>Phí rút tiền</label>
+        <label htmlFor='tiso'>% phí rút tiền</label>
         <div className='flex items-center gap-x-2 mt-2'>
-          <input
-            id=''
-            type='text'
-            placeholder='1 điểm'
-            disabled
-            className='text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none  bg-transparent'
-          />
-          =
           <input
             id='tiso'
             type='text'
@@ -179,7 +171,7 @@ const Settings = () => {
               setTiso(e.target.value)
               setShow1(true)
             }}
-            placeholder='Vnđ'
+            placeholder='0'
             className='text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none  bg-transparent'
           />
           {show1 && (
