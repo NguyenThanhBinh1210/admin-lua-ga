@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState,useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import moment from 'moment'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
@@ -93,7 +93,7 @@ const Oders = () => {
     <>
       <div className='flex justify-between mb-3 mobile:flex-col tablet:flex-col'>
         <div className='mb-2 flex items-center'>
-          <span className='my-4 font-bold dark:text-white'>Số lượng đơn hàng: {count.count || 0}</span>
+          <span className='my-4 font-bold dark:text-white'>Số lượng đơn hàng: {staff?.length}</span>
         </div>
         <div className='w-[50%] mobile:w-full'>
           <form onSubmit={(e) => handleSearch(e)}>
@@ -218,17 +218,16 @@ const Oders = () => {
                             className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
                             <span
-                              className={`${
-                                item?.status === 'pending'
-                                  ? 'bg-yellow-500'
-                                  : item?.status === 'done'
+                              className={`${item?.status === 'pending'
+                                ? 'bg-yellow-500'
+                                : item?.status === 'done'
                                   ? 'bg-green-500'
                                   : item?.status === 'lost'
-                                  ? 'bg-red-500'
-                                  : item?.status === 'false'
-                                  ? 'bg-blue-500'
-                                  : ''
-                              } text-white px-2 py-0.5 pb-1 text-xs rounded-md`}
+                                    ? 'bg-red-500'
+                                    : item?.status === 'false'
+                                      ? 'bg-blue-500'
+                                      : ''
+                                } text-white px-2 py-0.5 pb-1 text-xs rounded-md`}
                             >
                               {item?.status}
                             </span>
@@ -243,33 +242,37 @@ const Oders = () => {
                             scope='row'
                             className='px-6 py-3 w-[200px] flex items-center gap-x-2 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
-                            <button
-                              type='button'
-                              onClick={() => {
-                                handleUpdate(item._id, 'done')
-                              }}
-                              className='text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
-                            >
-                              Thắng
-                            </button>
-                            <button
-                              type='button'
-                              onClick={() => {
-                                handleUpdate(item._id, 'lost')
-                              }}
-                              className='text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
-                            >
-                              Thua
-                            </button>
-                            <button
-                              type='button'
-                              onClick={() => {
-                                handleUpdate(item._id, 'false')
-                              }}
-                              className='text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
-                            >
-                              Huỷ
-                            </button>
+                            {item.status === 'pending' && (
+                              <>
+                                <button
+                                  type='button'
+                                  onClick={() => {
+                                    handleUpdate(item._id, 'done')
+                                  }}
+                                  className='text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
+                                >
+                                  Thắng
+                                </button>
+                                <button
+                                  type='button'
+                                  onClick={() => {
+                                    handleUpdate(item._id, 'lost')
+                                  }}
+                                  className='text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
+                                >
+                                  Thua
+                                </button>
+                                <button
+                                  type='button'
+                                  onClick={() => {
+                                    handleUpdate(item._id, 'false')
+                                  }}
+                                  className='text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
+                                >
+                                  Huỷ
+                                </button>
+                              </>
+                            )}
                             <button
                               type='button'
                               onClick={() => {

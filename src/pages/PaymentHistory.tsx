@@ -29,11 +29,6 @@ const PaymentHistory = () => {
       setTiso(data.data[0].money)
     }
   })
-  // const [currentPageWitdraw, setCurrentPageWitdraw] = useState(1)
-  // const totalPagesWitdraw = Math.ceil(arrayWithoutInfoRechargeMoney?.length / itemsPerPage)
-  // const startIndexWitdraw = (currentPageWitdraw - 1) * itemsPerPage
-  // const endIndexWitdraw = startIndexWitdraw + itemsPerPage
-  // const currentDataWitdraw = arrayWithoutInfoRechargeMoney?.slice(startIndexWitdraw, endIndexWitdraw)
 
   const searchMutation = useMutation({
     mutationFn: (userId: string) => getRecharges({ userId: userId })
@@ -105,7 +100,6 @@ const PaymentHistory = () => {
       return getWithrowRecharges({})
     },
     onSuccess: (data) => {
-      console.log(data.data)
       setRecharges(data.data)
     }
   })

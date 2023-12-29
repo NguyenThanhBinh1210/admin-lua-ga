@@ -55,11 +55,13 @@ const Custommer = () => {
     cacheTime: 30000
   })
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      queryClient.invalidateQueries({ queryKey: ['user', 3] })
-    }, 2000)
-    return () => clearInterval(intervalId)
-  }, [queryClient])
+    if (search === '') {
+      const intervalId = setInterval(() => {
+        queryClient.invalidateQueries({ queryKey: ['user', 3] })
+      }, 2000)
+      return () => clearInterval(intervalId)
+    }
+  }, [queryClient, search])
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page)
