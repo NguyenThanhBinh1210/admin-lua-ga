@@ -8,6 +8,7 @@ class Upload {
   constructor() {
     this.accessToken = getAccessTokenFromLS()
     this.instance = axios.create({
+      // baseURL: 'http://localhost:4001/api/',
       baseURL: 'https://lostglobal.onrender.com/api/',
       timeout: 10000,
       headers: {

@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
-import { deleteStaff, getAllStaff, searchUser } from '~/apis/product.api'
+import { deleteStaff, getAllStaff, updateStaff, searchUser } from '~/apis/product.api'
 import Loading from '~/components/Loading/Loading'
 import Modal from '~/components/Modal'
 import CreateRecharge from '~/components/Modal/CreateRecharge'
@@ -18,6 +18,17 @@ const Custommer = () => {
   const [showComment, setShowComment] = useState()
   const [isModalOpen, setModalOpen] = useState(false)
   const [isOpenRecharge, setOpenRecharge] = useState(false)
+
+  // const updateMutations = useMutation({
+  //   mutationFn: ({ id, body }: { id: string; body: { isLook?: boolean; isDongBang?: boolean } }) => updateStaff(id, body),
+  //   onSuccess: () => {
+  //     queryClient.invalidateQueries('update-order-historys');
+  //   },
+  // });
+
+  // const handleUpdate = (id: string, body: { isLook?: boolean; isDongBang?: boolean }) => {
+  //   updateMutations.mutate({ id, body });
+  // };
 
   const searchMutation = useMutation({
     mutationFn: (id: string) => searchUser(id)
@@ -77,6 +88,25 @@ const Custommer = () => {
       }
     })
   }
+  const updateMutations = useMutation({
+    mutationFn: ({ userId, body }: { userId: string; body: { isDongBang?: boolean } }) => updateStaff(userId, body),
+    onSuccess: () => {
+      queryClient.invalidateQueries('update-order-historys')
+    }
+  })
+
+  const handleUpdate = (userId: string, isDongBang: boolean) => {
+    updateMutations.mutate({ userId, body: { isDongBang } })
+  }
+
+  const [isActive, setIsActive] = useState<{ [key: string]: boolean }>({})
+
+  const handleClick = (itemId: string) => {
+    setIsActive((prev) => ({ ...prev, [itemId]: !prev[itemId] }))
+    const newState = !isActive[itemId]
+    handleUpdate(itemId, newState)
+  }
+
   return (
     <>
       <div className='flex justify-between mb-3 mobile:flex-col tablet:flex-col'>
@@ -160,9 +190,12 @@ const Custommer = () => {
                           Số tài khoản
                         </th>
                         <th scope='col' className='px-6 py-3'>
-                          Tổng số điểm hiện có
+                          Số tiền
                         </th>
                         <th scope='col' className='px-6 py-3'>
+                          Đóng băng
+                        </th>
+                        <th scope='col' className='px-6 py-3 text-center'>
                           Hành động
                         </th>
                       </tr>
@@ -246,9 +279,25 @@ const Custommer = () => {
                                 scope='row'
                                 className='px-6 py-3 font-medium text-green-500 whitespace-nowrap dark:text-white'
                               >
-                                {item.walletBalance||0}
+                                {new Intl.NumberFormat('vi-VN', {
+                                  style: 'currency',
+                                  currency: 'VND',
+                                  minimumFractionDigits: 0
+                                }).format(item.walletBalance as number)}
                               </th>
-
+                              <th
+                                scope='row'
+                                className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                              >
+                                <button
+                                  className={`py-2 px-4 text-white font-medium rounded-full ${
+                                    item.isDongBang ? 'bg-green-500' : 'bg-gray-300'
+                                  }`}
+                                  onClick={() => handleClick(item._id)}
+                                >
+                                  {item.isDongBang ? 'Bật' : 'Tắt'}
+                                </button>
+                              </th>
                               <th
                                 scope='row'
                                 className='px-6 py-3 w-[200px] flex items-center gap-x-2 font-medium text-gray-900 whitespace-nowrap dark:text-white'
@@ -259,12 +308,36 @@ const Custommer = () => {
                                     setOpenRecharge(true)
                                     setUserId(item._id)
                                   }}
+                                  title='Đóng tài khoản'
+                                  className={`text-white bg-gray-500 hover:bg-gray-600 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-yellow-900 `}
+                                >
+                                  Khoá
+                                </button>
+                                <button
+                                  type='button'
+                                  onClick={() => {
+                                    setOpenRecharge(true)
+                                    setUserId(item._id)
+                                  }}
+                                  title='Xem và cập nhật khách hàng'
+                                  className={`text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-yellow-900 `}
+                                >
+                                  Xem
+                                </button>
+                                <button
+                                  type='button'
+                                  title='Nạp tiền'
+                                  onClick={() => {
+                                    setOpenRecharge(true)
+                                    setUserId(item._id)
+                                  }}
                                   className={`text-white bg-yellow-500 hover:bg-yellow-600 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-yellow-900 `}
                                 >
                                   Nạp
                                 </button>
                                 <button
                                   type='button'
+                                  title='Xoá khách hàng'
                                   onClick={() => handleDeleteStaff(item._id)}
                                   className='text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900'
                                 >
@@ -284,10 +357,14 @@ const Custommer = () => {
           </>
         )}
       </div>
-      <CreateRecharge userId={userId} isOpen={isOpenRecharge} onClose={() => {
-        setOpenRecharge(false)
-        setUserId('')
-      }} />
+      <CreateRecharge
+        userId={userId}
+        isOpen={isOpenRecharge}
+        onClose={() => {
+          setOpenRecharge(false)
+          setUserId('')
+        }}
+      />
       <Modal data={showComment} isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
     </>
   )

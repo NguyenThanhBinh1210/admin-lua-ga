@@ -158,10 +158,7 @@ const Oders = () => {
                       Id User
                     </th>
                     <th scope='col' className='px-6 py-3'>
-                      Tổng cược
-                    </th>
-                    <th scope='col' className='px-6 py-3'>
-                      Thành tiền
+                      Số tiền
                     </th>
                     <th scope='col' className='px-6 py-3'>
                       Trạng thái
@@ -210,17 +207,11 @@ const Oders = () => {
                             scope='row'
                             className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
-                            {item.countNum}
-                          </th>
-                          <th
-                            scope='row'
-                            className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
-                          >
                             {new Intl.NumberFormat('vi-VN', {
                               style: 'currency',
                               currency: 'VND',
                               minimumFractionDigits: 0
-                            }).format(item.countNum * (tiso as number))}
+                            }).format(item.countNum as number)}
                           </th>
                           <th
                             scope='row'
