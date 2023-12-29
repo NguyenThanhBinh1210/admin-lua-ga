@@ -413,16 +413,7 @@ const PaymentHistory = () => {
                                 >
                                   {FormatNumber(item?.totalAmount)}₫
                                 </th>
-                                {/* <th
-                                  scope='row'
-                                  className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
-                                >
-                                  {new Intl.NumberFormat('vi-VN', {
-                                    style: 'currency',
-                                    currency: 'VND',
-                                    minimumFractionDigits: 0
-                                  }).format(item.totalAmount * (tiso as number))}
-                                </th> */}
+
                                 <th
                                   scope='row'
                                   className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'

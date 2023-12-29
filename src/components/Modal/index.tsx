@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useMutation, useQueryClient } from 'react-query'
 import { updateStaff } from '~/apis/product.api'
 import { toast } from 'react-toastify'
+import { updateBank } from '~/apis/admin.api'
 const Modal = ({ isOpen, onClose, data }: any) => {
   const modalRef = useRef<HTMLDivElement>(null)
   const handleModalClick = (e: React.MouseEvent) => {
@@ -22,6 +23,9 @@ const Modal = ({ isOpen, onClose, data }: any) => {
   const queryClient = useQueryClient()
   const mutation = useMutation((body: any) => {
     return updateStaff(data._id, body)
+  })
+  const mutationUpdateBank = useMutation((body: any) => {
+    return updateBank(data._id, body)
   })
   const mutationUpdatePassword = useMutation((body: any) => {
     const newData = {
@@ -44,6 +48,17 @@ const Modal = ({ isOpen, onClose, data }: any) => {
       onSuccess: () => {
         toast.success('Đổi mật khẩu thành công!')
         setShowChangePass(false)
+      }
+    })
+  }
+  const handleUpdateBank = () => {
+    const newData = {
+      banKNumber: formState.banKNumber,
+      bankName: formState.bankName,
+    }
+    mutationUpdateBank.mutate(newData, {
+      onSuccess: () => {
+        toast.success('Đổi ngân hàng thành công!')
       }
     })
   }
@@ -146,7 +161,8 @@ const Modal = ({ isOpen, onClose, data }: any) => {
               </div>
 
               <button
-                type='submit'
+                onClick={handleUpdateBank}
+                type='button'
                 className='w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'
               >
                 {mutation.isLoading ? (
