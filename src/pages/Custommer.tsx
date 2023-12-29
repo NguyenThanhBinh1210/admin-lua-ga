@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
 import { deleteStaff, getAllStaff, updateStaff, searchUser } from '~/apis/product.api'
@@ -58,6 +58,12 @@ const Custommer = () => {
     },
     cacheTime: 30000
   })
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      queryClient.invalidateQueries(['user', 3])
+    }, 2000)
+    return () => clearInterval(intervalId)
+  }, [queryClient])
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page)
@@ -88,25 +94,30 @@ const Custommer = () => {
       }
     })
   }
-  const updateMutations = useMutation({
-    mutationFn: ({ userId, body }: { userId: string; body: { isDongBang?: boolean } }) => updateStaff(userId, body),
-    onSuccess: () => {
-      queryClient.invalidateQueries('update-order-historys')
-    }
-  })
-
-  const handleUpdate = (userId: string, isDongBang: boolean) => {
-    updateMutations.mutate({ userId, body: { isDongBang } })
-  }
 
   const [isActive, setIsActive] = useState<{ [key: string]: boolean }>({})
-
+  const [isActives, setIsActives] = useState<{ [key: string]: boolean }>({})
+  const handleUpdate = (userId: string, actionType: 'dongBang' | 'moKhoa', newState: boolean) => {
+    const body = { isDongBang: actionType === 'dongBang' ? newState : undefined, isLook: actionType === 'moKhoa' ? newState : undefined };
+    
+    updateStaff(userId, body)
+      .then(() => {
+        const queryKey = actionType === 'dongBang' ? 'update-order-historys' : 'update-order-historyss';
+        queryClient.invalidateQueries(queryKey);
+      })
+      .catch((error) => {
+        // Xử lý lỗi nếu cần
+        console.error('Error updating staff:', error);
+      });
+  };
   const handleClick = (itemId: string) => {
-    setIsActive((prev) => ({ ...prev, [itemId]: !prev[itemId] }))
-    const newState = !isActive[itemId]
-    handleUpdate(itemId, newState)
-  }
-
+    handleUpdate(itemId, 'dongBang', !isActive[itemId]);
+  };
+  
+  const handleClicks = (itemId: string) => {
+    handleUpdate(itemId, 'moKhoa', !isActives[itemId]);
+  };
+    
   return (
     <>
       <div className='flex justify-between mb-3 mobile:flex-col tablet:flex-col'>
@@ -303,15 +314,13 @@ const Custommer = () => {
                                 className='px-6 py-3 w-[200px] flex items-center gap-x-2 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                               >
                                 <button
-                                  type='button'
-                                  onClick={() => {
-                                    setOpenRecharge(true)
-                                    setUserId(item._id)
-                                  }}
-                                  title='Đóng tài khoản'
-                                  className={`text-white bg-gray-500 hover:bg-gray-600 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-yellow-900 `}
+                                  title='Mở hoặc khoá tài khoản'
+                                  className={`py-2 px-4 text-white font-medium rounded-full ${
+                                    item.isDongBang ? 'bg-green-600' : 'bg-gray-400'
+                                  }`}
+                                  onClick={() => handleClicks(item._id)}
                                 >
-                                  Khoá
+                                  {item.isLook ? 'Mở' : 'Khoá'}
                                 </button>
                                 <button
                                   type='button'
