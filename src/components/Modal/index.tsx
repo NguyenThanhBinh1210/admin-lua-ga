@@ -17,8 +17,6 @@ const Modal = ({ isOpen, onClose, data }: any) => {
     password: '',
     bankName: '',
     banKNumber: '',
-    isStaff: true,
-    isAdmin: false
   }
   const queryClient = useQueryClient()
   const mutation = useMutation((body: any) => {
@@ -53,12 +51,14 @@ const Modal = ({ isOpen, onClose, data }: any) => {
   }
   const handleUpdateBank = () => {
     const newData = {
-      banKNumber: formState.banKNumber,
+      accountNumber: formState.banKNumber,
       bankName: formState.bankName,
     }
     mutationUpdateBank.mutate(newData, {
       onSuccess: () => {
         toast.success('Đổi ngân hàng thành công!')
+        setFormState(initialFromState)
+        onClose()
       }
     })
   }
