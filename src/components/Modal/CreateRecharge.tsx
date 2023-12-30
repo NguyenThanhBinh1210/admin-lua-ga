@@ -5,7 +5,6 @@ import { createRecharge } from '~/apis/admin.api'
 
 
 const CreateRecharge = ({ isOpen, onClose, userId }: { isOpen: boolean; onClose: () => void; userId: string }) => {
-  console.log(userId);
   const modalRef = useRef<HTMLDivElement>(null)
   const handleModalClick = (e: React.MouseEvent) => {
     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {

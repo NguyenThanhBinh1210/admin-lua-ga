@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useEffect } from 'react'
-import moment from 'moment'
+import { useState, useEffect, useContext } from 'react'
+
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
-import { deleteOrder, getAllOrder, searchOrder } from '~/apis/product.api'
+import { getAllOrder, searchOrder } from '~/apis/product.api'
 import Loading from '~/components/Loading/Loading'
 
 import Paginate from '~/components/Pagination/Paginate'
@@ -12,7 +12,10 @@ import usePagination from '~/hooks/usePagination'
 
 import { UpdateOrdertHistory } from '~/apis/payment.api'
 import { formatTime } from '~/utils/utils'
+import { AppContext } from '~/contexts/app.context'
 const Oders = () => {
+  const { profile } = useContext(AppContext)
+
   const [staff, setStaff] = useState<any>([])
   const [search, setSearch] = useState<string>('')
   const { currentPage, totalPages, currentData, setCurrentPage } = usePagination(8, staff)
@@ -259,15 +262,18 @@ const Oders = () => {
                                 </button>
                               </>
                             )}
-                            <button
-                              type='button'
-                              onClick={() => {
-                                handleUpdate(item._id, 'delete')
-                              }}
-                              className='text-white bg-gray-700 hover:bg-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-900'
-                            >
-                              Xoá
-                            </button>
+                            {profile?.isAdmin && (
+
+                              <button
+                                type='button'
+                                onClick={() => {
+                                  handleUpdate(item._id, 'delete')
+                                }}
+                                className='text-white bg-gray-700 hover:bg-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-900'
+                              >
+                                Xoá
+                              </button>
+                            )}
                           </th>
                         </tr>
                       )

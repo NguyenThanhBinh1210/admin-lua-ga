@@ -33,11 +33,11 @@ const PaymentHistory = () => {
   })
 
   const searchMutation = useMutation({
-    mutationFn: (userId: string) => getRecharges({ userId: userId })
+    mutationFn: (search?: string) => getRecharges({ userId: search, username: search })
   })
 
   const searchMutations = useMutation({
-    mutationFn: (userId: string) => getWithrowRecharges({ userId: userId })
+    mutationFn: (search?: string) => getWithrowRecharges({ userId: search, username: search })
   })
 
 

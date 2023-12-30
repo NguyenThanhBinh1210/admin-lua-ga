@@ -2,10 +2,9 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
+import { updateRole } from '~/apis/auth.api'
 import { deleteStaff, getAllStaff, searchUser } from '~/apis/product.api'
 import Loading from '~/components/Loading/Loading'
-import Modal from '~/components/Modal'
-import CreateRecharge from '~/components/Modal/CreateRecharge'
 import CreateStaff from '~/components/Modal/CreateStaff'
 import NotReSearch from '~/components/NotReSearch/NotReSearch'
 import Paginate from '~/components/Pagination/Paginate'
@@ -23,6 +22,9 @@ const Users = () => {
   })
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteStaff(id)
+  })
+  const updateMutation = useMutation({
+    mutationFn: (item: any) => updateRole(item._id, { isAdmin: item?.idAdmin ? false : true })
   })
   const queryClient = useQueryClient()
   const handleDeleteStaff = (id: string) => {
@@ -63,6 +65,13 @@ const Users = () => {
       }
     })
   }
+  const handleUpdate = (item: any) => {
+    updateMutation.mutate(item, {
+      onSuccess: () => {
+        toast.success('Thành công!')
+      }
+    })
+  }
   return (
     <>
       <SearchHeader
@@ -96,6 +105,13 @@ const Users = () => {
                         <th scope='col' className='px-6 py-3'>
                           User Name
                         </th>
+                        <th scope='col' className='px-6 py-3'>
+                          Quyền Admin
+                        </th>
+                        <th scope='col' className='px-6 py-3'>
+                          Quyền Nhân viên
+                        </th>
+
                         <th scope='col' className='px-6 py-3'>
                           Hành động
                         </th>
@@ -155,8 +171,40 @@ const Users = () => {
                               </th>
                               <th
                                 scope='row'
+                                className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                              >
+                                <button
+                                  onClick={() => handleUpdate(item)}
+                                  className='relative inline-flex items-center cursor-pointer'
+                                >
+                                  <div
+                                    className={`${item?.isAdmin
+                                      ? "w-11 h-6 rounded-full peer dark:bg-gray-700 after:translate-x-full rtl:after:-translate-x-full after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 bg-blue-600"
+                                      : "w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
+                                      }`}
+                                  />
+                                </button>
+                              </th>
+                              <th
+                                scope='row'
+                                className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                              >
+                                <div className='relative inline-flex items-center cursor-pointer'>
+                                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600" />
+                                </div>
+                              </th>
+                              <th
+                                scope='row'
                                 className='px-6 py-3 w-[200px] flex items-center gap-x-2 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                               >
+                                <button
+                                  type='button'
+                                  // onClick={() => handleUpdate(item)}
+                                  className='text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
+                                >
+                                  Cập nhật
+                                </button>
+
                                 <button
                                   type='button'
                                   onClick={() => handleDeleteStaff(item._id)}

@@ -22,6 +22,7 @@ const CreateStaff = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
   }
 
   const initialFromState = {
+    name: '',
     username: '',
     password: ''
   }
@@ -35,7 +36,6 @@ const CreateStaff = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
   }
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    console.log(formState);
     mutation.mutate(formState, {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['user', 3] })
@@ -90,6 +90,20 @@ const CreateStaff = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
             <form className='space-y-6' action='#' autoComplete='false' onSubmit={(e) => handleSubmit(e)}>
 
 
+              <div>
+                <label htmlFor='name' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
+                  Tên
+                </label>
+                <input
+                  type='text'
+                  name='name'
+                  id='name'
+                  className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
+                  placeholder='Tên'
+                  value={formState?.name}
+                  onChange={handleChange('name')}
+                />
+              </div>
               <div>
                 <label htmlFor='username' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
                   Tài khoản
