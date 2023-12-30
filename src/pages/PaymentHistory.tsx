@@ -9,6 +9,7 @@ import CreatePayment from '~/components/Modal/CreatePayment'
 import { FormatNumber } from '~/hooks/useFormatNumber'
 import ConfirmModal from '~/components/Modal/ConfirmModal'
 import ConfirmModal2 from '~/components/Modal/ConfirmModal2'
+import { formatTime } from '~/utils/utils'
 
 const PaymentHistory = () => {
   const queryClient = useQueryClient()
@@ -238,7 +239,7 @@ const PaymentHistory = () => {
                             Trạng thái
                           </th>
                           <th scope='col' className='px-6 py-3'>
-                            Ngày nạp
+                            Thời gian nạp
                           </th>
                         </tr>
                       </thead>
@@ -289,7 +290,8 @@ const PaymentHistory = () => {
                                   scope='row'
                                   className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                                 >
-                                  {moment(item?.createdAt).format('DD/MM/YYYY')}
+                                  {formatTime(item?.createdAt)}
+
                                 </th>
                               </tr>
                             )
@@ -379,17 +381,20 @@ const PaymentHistory = () => {
                           <th scope='col' className='px-6 py-3'>
                             UserId
                           </th>
+                          <th scope='col' className='px-6 py-3 min-w-[150px]'>
+                            Chủ tài khoản
+                          </th>
                           <th scope='col' className='px-6 py-3'>
                             Số tài khoản
                           </th>
-                          <th scope='col' className='px-6 py-3'>
+                          <th scope='col' className='px-6 py-3 min-w-[150px]'>
                             Tên ngân hàng
                           </th>
-                          <th scope='col' className='px-6 py-3'>
+                          <th scope='col' className='px-6 py-3 min-w-[150px]'>
                             Trạng thái
                           </th>
                           <th scope='col' className='px-6 py-3'>
-                            Ngày rút
+                            Thời gian rút
                           </th>
                           <th scope='col' className='px-6 py-3'>
                             Hành động
@@ -429,7 +434,12 @@ const PaymentHistory = () => {
                                 >
                                   {item?.userId?.idUser}
                                 </th>
-
+                                <th
+                                  scope='row'
+                                  className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                                >
+                                  {item?.bankUserName}
+                                </th>
                                 <th
                                   scope='row'
                                   className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
@@ -463,7 +473,7 @@ const PaymentHistory = () => {
                                   scope='row'
                                   className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                                 >
-                                  {moment(item?.createdAt).format('DD/MM/YYYY')}
+                                  {formatTime(item?.createdAt)}
                                 </th>
                                 <th
                                   scope='row'

@@ -5,34 +5,19 @@ import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
 import { deleteOrder, getAllOrder, searchOrder } from '~/apis/product.api'
 import Loading from '~/components/Loading/Loading'
-import ShowOrder from '~/components/Modal/ShowOrder'
+
 import Paginate from '~/components/Pagination/Paginate'
-import { FormatNumber } from '~/hooks/useFormatNumber'
+
 import usePagination from '~/hooks/usePagination'
-import { getTiso } from '~/apis/setting.api'
-import { UpdateHistory, UpdateOrdertHistory } from '~/apis/payment.api'
+
+import { UpdateOrdertHistory } from '~/apis/payment.api'
+import { formatTime } from '~/utils/utils'
 const Oders = () => {
-  const [tiso, setTiso] = useState<any>()
   const [staff, setStaff] = useState<any>([])
-  const [count, setCount] = useState<any>([])
   const [search, setSearch] = useState<string>('')
   const { currentPage, totalPages, currentData, setCurrentPage } = usePagination(8, staff)
-  const [showComment, setShowComment] = useState()
-  const [isModalOpen, setModalOpen] = useState(false)
-  useQuery({
-    queryKey: ['get-tisos'],
-    queryFn: () => {
-      return getTiso()
-    },
-    onSuccess: (data) => {
-      setTiso(data.data[0].money)
-    }
-  })
   const searchMutation = useMutation({
     mutationFn: (idUser: string) => searchOrder(idUser)
-  })
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => deleteOrder(id)
   })
   const updateMutations = useMutation({
     mutationFn: ({ id, status }: { id: string; status: string }) => UpdateOrdertHistory(id, status),
@@ -46,17 +31,6 @@ const Oders = () => {
   }
 
   const queryClient = useQueryClient()
-  const handledeleteOrder = (id: string) => {
-    deleteMutation.mutate(id, {
-      onSuccess: () => {
-        toast.success('Đã xoá!')
-        queryClient.invalidateQueries({ queryKey: ['orders', 3] })
-      },
-      onError: () => {
-        toast.warn('Lỗi!')
-      }
-    })
-  }
   useEffect(() => {
     if (search === '') {
       const intervalId = setInterval(() => {
@@ -157,6 +131,9 @@ const Oders = () => {
                       Mã hàng
                     </th>
                     <th scope='col' className='px-6 py-3'>
+                      Username
+                    </th>
+                    <th scope='col' className='px-6 py-3'>
                       Id User
                     </th>
                     <th scope='col' className='px-6 py-3'>
@@ -166,7 +143,7 @@ const Oders = () => {
                       Trạng thái
                     </th>
                     <th scope='col' className='px-6 py-3'>
-                      Ngày cược
+                      Thời gian cược
                     </th>
                     <th scope='col' className='px-6 py-3'>
                       Hành động
@@ -175,7 +152,7 @@ const Oders = () => {
                 </thead>
                 {staff.length !== 0 && (
                   <tbody>
-                    {staff.map((item: any, idx: number) => {
+                    {currentData.map((item: any, idx: number) => {
                       return (
                         <tr
                           key={item._id}
@@ -198,6 +175,12 @@ const Oders = () => {
                             className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
                             {item.randomNumber}
+                          </th>
+                          <th
+                            scope='row'
+                            className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                          >
+                            {item.username}
                           </th>
                           <th
                             scope='row'
@@ -238,11 +221,12 @@ const Oders = () => {
                             scope='row'
                             className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
-                            {moment(item?.createdAt).format('DD/MM/YYYY')}
+                            {formatTime(item?.createdAt)}
+
                           </th>
                           <th
                             scope='row'
-                            className='px-6 py-3 w-[200px] flex items-center gap-x-2 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                            className='px-6 py-3 w-[200px] grid grid-cols-2 gap-2 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
                             {item.status === 'pending' && (
                               <>
@@ -251,7 +235,7 @@ const Oders = () => {
                                   onClick={() => {
                                     handleUpdate(item._id, 'done')
                                   }}
-                                  className='text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
+                                  className='text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-900'
                                 >
                                   Thắng
                                 </button>
@@ -260,7 +244,7 @@ const Oders = () => {
                                   onClick={() => {
                                     handleUpdate(item._id, 'lost')
                                   }}
-                                  className='text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
+                                  className='text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900'
                                 >
                                   Thua
                                 </button>
@@ -280,7 +264,7 @@ const Oders = () => {
                               onClick={() => {
                                 handleUpdate(item._id, 'delete')
                               }}
-                              className='text-white bg-gray-700 hover:bg-gray-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
+                              className='text-white bg-gray-700 hover:bg-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-900'
                             >
                               Xoá
                             </button>
@@ -296,7 +280,6 @@ const Oders = () => {
           </>
         )}
       </div>
-      <ShowOrder data={showComment} isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
     </>
   )
 }

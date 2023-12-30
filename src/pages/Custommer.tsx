@@ -6,23 +6,29 @@ import { deleteStaff, getAllStaff, updateStaff, searchUser } from '~/apis/produc
 import Loading from '~/components/Loading/Loading'
 import Modal from '~/components/Modal'
 import CreateRecharge from '~/components/Modal/CreateRecharge'
-import CreateStaff from '~/components/Modal/CreateStaff'
 import NotReSearch from '~/components/NotReSearch/NotReSearch'
 import Paginate from '~/components/Pagination/Paginate'
 import usePagination from '~/hooks/usePagination'
 
 const Custommer = () => {
+  const initialFromState = {
+    name: '',
+    username: '',
+    password: '',
+    bankName: '',
+    banKNumber: '',
+    nameUserBank: ''
+  }
   const [staff, setStaff] = useState<any>([])
   const [userId, setUserId] = useState<string>('')
   const [search, setSearch] = useState<string>('')
   const { currentPage, totalPages, currentData, setCurrentPage } = usePagination(8, staff)
-  const [showUser, setShowComment] = useState()
+  const [showUser, setShowComment] = useState<any>(null)
   const [isModalOpen, setModalOpen] = useState(false)
   const [isOpenRecharge, setOpenRecharge] = useState(false)
   const searchMutation = useMutation({
     mutationFn: (id: string) => searchUser(id)
   })
-  console.log(currentData);
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteStaff(id)
   })
@@ -72,7 +78,7 @@ const Custommer = () => {
     searchMutation.mutate('', {
       onSuccess: (data) => {
         setSearch('')
-        setStaff(data.data)
+        setStaff(data.data.user.filter((user: any) => !user.isStaff).filter((user: any) => !user.isAdmin))
         setCurrentPage(1)
       },
       onError: () => {
@@ -103,7 +109,6 @@ const Custommer = () => {
         queryClient.invalidateQueries({ queryKey: ['user', 3] })
 
         toast.success('Thành công!')
-
       }
     })
   }
@@ -117,7 +122,6 @@ const Custommer = () => {
         queryClient.invalidateQueries({ queryKey: ['user', 3] })
 
         toast.success('Thành công!')
-
       }
     })
   }
@@ -188,16 +192,19 @@ const Custommer = () => {
                         <th scope='col' className='px-6 py-3'>
                           Username
                         </th>
-                        <th scope='col' className='px-6 py-3'>
+                        <th scope='col' className='px-6 py-3 min-w-[150px]'>
                           Id tài khoản
                         </th>
-                        <th scope='col' className='px-6 py-3'>
+                        <th scope='col' className='px-6 py-3 min-w-[180px]'>
                           Id người giới thiệu
+                        </th>
+                        <th scope='col' className='px-6 py-3'>
+                          Chủ tài khoản
                         </th>
                         <th scope='col' className='px-6 py-3'>
                           Ngân hàng
                         </th>
-                        <th scope='col' className='px-6 py-3'>
+                        <th scope='col' className='px-6 py-3 min-w-[150px]'>
                           Số tài khoản
                         </th>
                         <th scope='col' className='px-6 py-3'>
@@ -206,7 +213,7 @@ const Custommer = () => {
                         <th scope='col' className='px-6 py-3'>
                           Chặn
                         </th>
-                        <th scope='col' className='px-6 py-3'>
+                        <th scope='col' className='px-6 py-3 min-w-[130px]'>
                           Đóng băng
                         </th>
                         <th scope='col' className='px-6 py-3 text-center'>
@@ -250,6 +257,12 @@ const Custommer = () => {
                                 scope='row'
                                 className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                               >
+                                {item?.nameUserBank}
+                              </th>
+                              <th
+                                scope='row'
+                                className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                              >
                                 {item.bankName}
                               </th>
                               <th
@@ -285,7 +298,7 @@ const Custommer = () => {
                                 className=' px-6 py-3 gap-x-2 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                               >
                                 <button
-                                  className={` text-white w-10 h-full font-medium rounded-full ${item.isDongBang ? 'bg-green-500' : 'bg-gray-300'
+                                  className={` text-white mx-auto block w-10 h-full font-medium rounded-full ${item.isDongBang ? 'bg-green-500' : 'bg-gray-300'
                                     }`}
                                   onClick={() => handleUpdateDongBang(item)}
                                 >
@@ -296,7 +309,6 @@ const Custommer = () => {
                                 scope='row'
                                 className='px-6 py-3 w-[200px] flex items-center gap-x-2 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                               >
-
                                 <button
                                   type='button'
                                   onClick={() => {
@@ -349,7 +361,14 @@ const Custommer = () => {
           setUserId('')
         }}
       />
-      <Modal data={showUser} isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
+      <Modal
+        data={showUser}
+        isOpen={isModalOpen}
+        onClose={() => {
+          setModalOpen(false)
+          setShowComment(initialFromState)
+        }}
+      />
     </>
   )
 }

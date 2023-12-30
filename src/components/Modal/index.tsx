@@ -5,19 +5,22 @@ import { updateStaff } from '~/apis/product.api'
 import { toast } from 'react-toastify'
 import { updateBank } from '~/apis/admin.api'
 const Modal = ({ isOpen, onClose, data }: any) => {
-  const modalRef = useRef<HTMLDivElement>(null)
-  const handleModalClick = (e: React.MouseEvent) => {
-    if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-      onClose()
-    }
-  }
   const initialFromState = {
     name: '',
     username: '',
     password: '',
     bankName: '',
     banKNumber: '',
+    nameUserBank: ''
   }
+  const modalRef = useRef<HTMLDivElement>(null)
+  const handleModalClick = (e: React.MouseEvent) => {
+    if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+      onClose()
+      setFormState(initialFromState)
+    }
+  }
+
   const queryClient = useQueryClient()
   const mutation = useMutation((body: any) => {
     return updateStaff(data._id, body)
@@ -53,12 +56,13 @@ const Modal = ({ isOpen, onClose, data }: any) => {
     const newData = {
       accountNumber: formState.banKNumber,
       bankName: formState.bankName,
+      nameUserBank: formState.nameUserBank,
     }
     mutationUpdateBank.mutate(newData, {
       onSuccess: () => {
         toast.success('Đổi ngân hàng thành công!')
-        setFormState(initialFromState)
         onClose()
+        setFormState(initialFromState)
       }
     })
   }
@@ -129,6 +133,20 @@ const Modal = ({ isOpen, onClose, data }: any) => {
                   disabled
                   value={formState?.username !== '' ? formState?.username : data?.username}
                   onChange={handleChange('username')}
+                />
+              </div>
+              <div>
+                <label htmlFor='nameUserBank' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
+                  Chủ tài khoản
+                </label>
+                <input
+                  type='text'
+                  name='nameUserBank'
+                  id='nameUserBank'
+                  className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
+                  placeholder=''
+                  value={formState?.nameUserBank !== '' ? formState?.nameUserBank : data?.nameUserBank}
+                  onChange={handleChange('nameUserBank')}
                 />
               </div>
               <div>

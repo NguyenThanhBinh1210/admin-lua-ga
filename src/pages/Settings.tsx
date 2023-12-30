@@ -159,9 +159,9 @@ const Settings = () => {
     })
   }
   return (
-    <div className='grid grid-cols-4 gap-5'>
+    <div className='grid grid-cols-4 gap-5 dark:text-white'>
       <div className='col-span-4 tablet:col-span-2 mobile:col-span-4'>
-        <label htmlFor='tiso'>Phí rút tiền (%)</label>
+        <label htmlFor='tiso' className='dark:text-white'>Phí rút tiền (%)</label>
         <div className='flex items-center gap-x-2 mt-2'>
           <input
             id='tiso'
@@ -172,7 +172,7 @@ const Settings = () => {
               setShow1(true)
             }}
             placeholder='0'
-            className='text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none  bg-transparent'
+            className='text-center w-[100px] dark:bg-gray-600 border border-slate-200 rounded-lg py-3 px-5 outline-none  bg-transparent'
           />
           {show1 && (
             <button onClick={handleUpdateTiso} className='bg-blue-500 py-3 px-5 rounded-lg text-white'>
@@ -182,7 +182,7 @@ const Settings = () => {
         </div>
       </div>
       <div className='col-span-4 tablet:col-span-2 mobile:col-span-4'>
-        <label htmlFor='time'>Thời gian đếm ngược (phút)</label>
+        <label htmlFor='time' className='dark:text-white'>Thời gian đếm ngược (phút)</label>
         <div className='flex items-center gap-x-2 mt-2'>
           <input
             value={cowndown}
@@ -193,7 +193,7 @@ const Settings = () => {
             id='time'
             type='text'
             placeholder='phút'
-            className='text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none  bg-transparent'
+            className='text-center dark:bg-gray-600 w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none  bg-transparent'
           />
           {show2 && (
             <button onClick={handleUpdateCountDowm} className='bg-blue-500 py-3 px-5 rounded-lg text-white'>
@@ -214,7 +214,7 @@ const Settings = () => {
             id='time'
             type='text'
             placeholder='đ'
-            className='text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none  bg-transparent'
+            className='text-center w-[100px] dark:bg-gray-600 border border-slate-200 rounded-lg py-3 px-5 outline-none  bg-transparent'
           />
           {show3 && (
             <button onClick={handleUpdateGioiHan} className='bg-blue-500 py-3 px-5 rounded-lg text-white'>
@@ -230,7 +230,7 @@ const Settings = () => {
           <button
             id='radom'
             placeholder='%'
-            className={`text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none   ${faction === '0' ? 'bg-green-800 text-gray-50' : 'bg-transparent text-slate-950'
+            className={`text-center dark:text-white w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none   ${faction === '0' ? 'bg-green-800 text-gray-50' : 'bg-transparent text-slate-950'
               }`}
             onClick={() => handleUpdateFaction('0')}
           >
@@ -240,7 +240,7 @@ const Settings = () => {
           <button
             id='radom'
             placeholder='%'
-            className={`text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none ${faction === '1' ? 'bg-green-800 text-gray-50' : 'bg-transparent text-slate-950'
+            className={`text-center dark:text-white w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none ${faction === '1' ? 'bg-green-800 text-gray-50' : 'bg-transparent text-slate-950'
               } `}
             onClick={() => handleUpdateFaction('1')}
           >
@@ -250,7 +250,7 @@ const Settings = () => {
           <button
             id='radom'
             placeholder='%'
-            className={`text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none ${faction === '2' ? 'bg-green-800 text-gray-50' : 'bg-transparent text-slate-950'
+            className={`text-center dark:text-white w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none ${faction === '2' ? 'bg-green-800 text-gray-50' : 'bg-transparent text-slate-950'
               }`}
             onClick={() => handleUpdateFaction('2')}
           >
@@ -261,11 +261,11 @@ const Settings = () => {
       </div>
       <div className='col-span-4 tablet:col-span-2 mobile:col-span-4'>
         <label htmlFor='radom'>Tỉ lệ random sản phẩm</label>
-        <div className='flex items-center gap-x-2 mt-2'>
+        <div className='flex items-center gap-x-2 mt-2 '>
           <button
             id='radom'
             placeholder='%'
-            className={`text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none  ${product === '0' ? 'bg-green-800 text-gray-50' : 'bg-transparent text-slate-950'
+            className={`text-center dark:text-white w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none  ${product === '0' ? 'bg-green-800 text-gray-50' : 'bg-transparent text-slate-950'
               }`}
             onClick={() => handleUpdateProduct('0')}
           >
@@ -275,7 +275,7 @@ const Settings = () => {
           <button
             id='radom'
             placeholder='%'
-            className={`text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none   ${product === '1' ? 'bg-green-800 text-gray-50' : 'bg-transparent text-slate-950'
+            className={`text-center dark:text-white w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none   ${product === '1' ? 'bg-green-800 text-gray-50' : 'bg-transparent text-slate-950'
               }`}
             onClick={() => handleUpdateProduct('1')}
           >
@@ -285,7 +285,7 @@ const Settings = () => {
           <button
             id='radom'
             placeholder='%'
-            className={`text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none   ${product === '2' ? 'bg-green-800 text-gray-50' : 'bg-transparent text-slate-950'
+            className={`text-center w-[100px] dark:text-white border border-slate-200 rounded-lg py-3 px-5 outline-none   ${product === '2' ? 'bg-green-800 text-gray-50' : 'bg-transparent text-slate-950'
               }`}
             onClick={() => handleUpdateProduct('2')}
           >

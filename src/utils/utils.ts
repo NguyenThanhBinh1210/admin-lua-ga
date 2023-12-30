@@ -60,3 +60,19 @@ export const handleDecoded = () => {
   }
   return { decoded, storageData }
 }
+export function formatTime(isoString: string) {
+  // Tạo đối tượng Date từ chuỗi thời gian
+  const dateObject = new Date(isoString)
+
+  // Lấy thông tin giờ, phút, ngày, tháng và năm
+  const hours = dateObject.getHours()
+  const minutes = dateObject.getMinutes()
+  const day = dateObject.getDate()
+  const month = dateObject.getMonth() + 1 // Tháng bắt đầu từ 0, cần cộng thêm 1
+  const year = dateObject.getFullYear()
+
+  // Tạo định dạng giờ:phút ngày/tháng/năm
+  const formattedDateTime = `${hours}:${minutes} ${day}/${month}/${year}`
+
+  return formattedDateTime
+}
