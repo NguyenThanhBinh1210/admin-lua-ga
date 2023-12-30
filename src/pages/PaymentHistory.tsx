@@ -8,6 +8,7 @@ import { UpdateHistory, UpdateWalletHistory } from '~/apis/payment.api'
 import CreatePayment from '~/components/Modal/CreatePayment'
 import { FormatNumber } from '~/hooks/useFormatNumber'
 import ConfirmModal from '~/components/Modal/ConfirmModal'
+import ConfirmModal2 from '~/components/Modal/ConfirmModal2'
 
 const PaymentHistory = () => {
   const queryClient = useQueryClient()
@@ -17,8 +18,8 @@ const PaymentHistory = () => {
   const [isModalOpen, setModalOpen] = useState(false)
   const [isModalOpenCreate, setModalOpenCreate] = useState(false)
   const [showLyDo, setShowLyDo] = useState(false)
+  const [showXacNhan, setShowXacNhan] = useState(false)
   const [type, setType] = useState(0)
-
   const itemsPerPage = 8
   useQuery({
     queryKey: ['get-tisos'],
@@ -38,16 +39,6 @@ const PaymentHistory = () => {
     mutationFn: (userId: string) => getWithrowRecharges({ userId: userId })
   })
 
-  const updateMutations = useMutation({
-    mutationFn: ({ id, status }: { id: string; status: string }) => UpdateWalletHistory(id, status),
-    onSuccess: () => {
-      queryClient.invalidateQueries('update-all-historys')
-    }
-  })
-
-  const handleUpdate = (id: string, status: string) => {
-    updateMutations.mutate({ id, status })
-  }
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
@@ -407,13 +398,6 @@ const PaymentHistory = () => {
                                 >
                                   {'#' + (idx + 1)}
                                 </th>
-                                {/* <th
-                                  scope='row'
-                                  className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
-                                >
-<<<<<<< HEAD
-                                  {item?.codeOder}
-                                </th> */}
                                 <th
                                   scope='row'
                                   className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
@@ -471,7 +455,8 @@ const PaymentHistory = () => {
                                     <button
                                       type='button'
                                       onClick={() => {
-                                        handleUpdate(item._id, 'done')
+                                        setShowXacNhan(true)
+                                        setDatas(item)
                                       }}
                                       className='text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
                                     >
@@ -589,6 +574,7 @@ const PaymentHistory = () => {
         }}
       />
       <ConfirmModal data={datas} isOpen={showLyDo} onClose={() => setShowLyDo(false)}></ConfirmModal>
+      <ConfirmModal2 data={datas} isOpen={showXacNhan} onClose={() => setShowXacNhan(false)}></ConfirmModal2>
     </>
   )
 }
