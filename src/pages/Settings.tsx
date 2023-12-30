@@ -11,7 +11,7 @@ import {
   getRandomProduct,
   getRandomFaction,
   getGioiHan,
-  updateGioiHan,
+  updateGioiHan
 } from '~/apis/setting.api'
 const Settings = () => {
   const [cowndown, setCoundown] = useState<any>()
@@ -161,7 +161,7 @@ const Settings = () => {
   return (
     <div className='grid grid-cols-4 gap-5'>
       <div className='col-span-4 tablet:col-span-2 mobile:col-span-4'>
-        <label htmlFor='tiso'>% phí rút tiền</label>
+        <label htmlFor='tiso'>Phí rút tiền (%)</label>
         <div className='flex items-center gap-x-2 mt-2'>
           <input
             id='tiso'
@@ -225,7 +225,7 @@ const Settings = () => {
       </div>
 
       <div className='col-span-4 tablet:col-span-2 mobile:col-span-4'>
-        <label htmlFor='radom'>Tỉ lệ random faction</label>
+        <label htmlFor='radom'>Tỉ lệ random thời trang</label>
         <div className='flex items-center gap-x-2 mt-2'>
           <button
             id='radom'
@@ -235,7 +235,7 @@ const Settings = () => {
             onClick={() => handleUpdateFaction('0')}
           >
             {' '}
-            random
+            Random
           </button>
           <button
             id='radom'
@@ -245,22 +245,22 @@ const Settings = () => {
             onClick={() => handleUpdateFaction('1')}
           >
             {' '}
-            chẳn
+            Chẳn
           </button>
           <button
             id='radom'
             placeholder='%'
-            className={`text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none  bg-transparent  ${faction === '2' ? 'bg-green-800 text-gray-50' : 'bg-transparent text-slate-950'
+            className={`text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none ${faction === '2' ? 'bg-green-800 text-gray-50' : 'bg-transparent text-slate-950'
               }`}
             onClick={() => handleUpdateFaction('2')}
           >
             {' '}
-            lẻ
+            Lẻ
           </button>
         </div>
       </div>
       <div className='col-span-4 tablet:col-span-2 mobile:col-span-4'>
-        <label htmlFor='radom'>Tỉ lệ random Product</label>
+        <label htmlFor='radom'>Tỉ lệ random sản phẩm</label>
         <div className='flex items-center gap-x-2 mt-2'>
           <button
             id='radom'
@@ -270,7 +270,7 @@ const Settings = () => {
             onClick={() => handleUpdateProduct('0')}
           >
             {' '}
-            random
+            Random
           </button>
           <button
             id='radom'
@@ -280,7 +280,8 @@ const Settings = () => {
             onClick={() => handleUpdateProduct('1')}
           >
             {' '}
-            chẳn          </button>
+            Chẳn{' '}
+          </button>
           <button
             id='radom'
             placeholder='%'
@@ -289,7 +290,7 @@ const Settings = () => {
             onClick={() => handleUpdateProduct('2')}
           >
             {' '}
-            lẻ
+            Lẻ
           </button>
         </div>
       </div>

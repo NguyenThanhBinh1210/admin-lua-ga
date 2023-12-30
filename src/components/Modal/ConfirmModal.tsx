@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react'
 import { useMutation, useQueryClient } from 'react-query'
 import ButtonLoading from '../Loading/ButtonLoading'
 import { UpdateWalletHistory } from '~/apis/payment.api'
+import { toast } from 'react-toastify'
 
 const ConfirmModal = ({ isOpen, onClose, data }: any) => {
   const modalRef = useRef<HTMLDivElement>(null)
@@ -23,6 +24,7 @@ const ConfirmModal = ({ isOpen, onClose, data }: any) => {
       UpdateWalletHistory(id, status, nfo),
     onSuccess: () => {
       onClose()
+      toast.success('Huỷ thành công!')
       queryClient.invalidateQueries('update-all-historys')
     }
   })
@@ -31,8 +33,8 @@ const ConfirmModal = ({ isOpen, onClose, data }: any) => {
   }
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    // console.log({ id: data._id, nfo: formState.nfo, status: 'false' });
-    updateMutations.mutate({ id: data._id, nfo: formState.nfo, status: 'false' })
+    formState.nfo === '' && toast.warn('Chưa điền lý do!')
+    formState.nfo !== '' && updateMutations.mutate({ id: data._id, nfo: formState.nfo, status: 'false' })
   }
   return (
     <div
