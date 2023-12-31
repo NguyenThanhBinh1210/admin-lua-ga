@@ -2,10 +2,9 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
+import { updateRole } from '~/apis/auth.api'
 import { deleteStaff, getAllStaff, searchUser } from '~/apis/product.api'
 import Loading from '~/components/Loading/Loading'
-import Modal from '~/components/Modal'
-import CreateRecharge from '~/components/Modal/CreateRecharge'
 import CreateStaff from '~/components/Modal/CreateStaff'
 import NotReSearch from '~/components/NotReSearch/NotReSearch'
 import Paginate from '~/components/Pagination/Paginate'
@@ -13,16 +12,27 @@ import SearchHeader from '~/components/Search/Search'
 import usePagination from '~/hooks/usePagination'
 
 const Users = () => {
+  const initialFromState = {
+    name: '',
+    username: '',
+    password: ''
+  }
   const [staff, setStaff] = useState<any>([])
   const [search, setSearch] = useState<string>('')
   const { currentPage, totalPages, currentData, setCurrentPage } = usePagination(8, staff)
   const [isModalOpenCreate, setModalOpenCreate] = useState(false)
-
+  const [staffModal, setStaffModal] = useState(initialFromState)
   const searchMutation = useMutation({
     mutationFn: (email: string) => searchUser(email)
   })
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteStaff(id)
+  })
+  const updateMutation = useMutation({
+    mutationFn: (item: any) => updateRole(item._id, { isAdmin: item?.isAdmin ? 'false' : 'true' })
+  })
+  const updateMutation2 = useMutation({
+    mutationFn: (item: any) => updateRole(item._id, { isStaff: item?.isStaff ? 'false' : 'true' })
   })
   const queryClient = useQueryClient()
   const handleDeleteStaff = (id: string) => {
@@ -42,7 +52,8 @@ const Users = () => {
       return getAllStaff()
     },
     onSuccess: (data) => {
-      setStaff(data.data.user.filter((user: any) => user.isStaff && !user.isAdmin))
+      console.log(data.data.user)
+      setStaff(data.data.user.filter((user: any) => user.isStaff))
     },
     cacheTime: 30000
   })
@@ -55,6 +66,7 @@ const Users = () => {
     e.preventDefault()
     searchMutation.mutate(search, {
       onSuccess: (data) => {
+        console.log(data.data)
         setStaff(data.data)
         setCurrentPage(1)
       },
@@ -63,10 +75,26 @@ const Users = () => {
       }
     })
   }
+  const handleUpdate = (item: any) => {
+    updateMutation.mutate(item, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['user', 3] })
+        toast.success('Thành công!')
+      }
+    })
+  }
+  const handleUpdate2 = (item: any) => {
+    updateMutation2.mutate(item, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['user', 3] })
+        toast.success('Thành công!')
+      }
+    })
+  }
   return (
     <>
       <SearchHeader
-        notShowSearch
+        // notShowSearch
         count={staff.length}
         search={search}
         setSearch={setSearch}
@@ -91,11 +119,18 @@ const Users = () => {
                           STT
                         </th>
                         <th scope='col' className='px-6 py-3'>
-                          Avatar
+                          Tên
                         </th>
                         <th scope='col' className='px-6 py-3'>
                           User Name
                         </th>
+                        <th scope='col' className='px-6 py-3'>
+                          Quyền Admin
+                        </th>
+                        <th scope='col' className='px-6 py-3'>
+                          Quyền Nhân viên
+                        </th>
+
                         <th scope='col' className='px-6 py-3'>
                           Hành động
                         </th>
@@ -115,38 +150,13 @@ const Users = () => {
                               >
                                 {'#' + (idx + 1)}
                               </th>
+
                               <th
                                 scope='row'
                                 className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                               >
-                                {item?.avatar[0] == null && (
-                                  <div className='relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600'>
-                                    <svg
-                                      className='absolute w-12 h-12 text-gray-400 -left-1'
-                                      fill='currentColor'
-                                      viewBox='0 0 20 20'
-                                      // style={{ borderRadius: '50%', width: '40px', height: '40px' }}
-                                      xmlns='http://www.w3.org/2000/svg'
-                                    >
-                                      <path
-                                        fillRule='evenodd'
-                                        // style={{ borderRadius: '50%', width: '40px', height: '40px' }}
-                                        d='M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z'
-                                        clipRule='evenodd'
-                                      ></path>
-                                    </svg>
-                                  </div>
-                                )}
-                                {item?.avatar[0] && (
-                                  <img
-                                    className='aa'
-                                    style={{ borderRadius: '50%', width: '40px', height: '40px' }}
-                                    src={item.avatar}
-                                    alt='avatar'
-                                  />
-                                )}
+                                {item.name}
                               </th>
-
                               <th
                                 scope='row'
                                 className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
@@ -155,8 +165,51 @@ const Users = () => {
                               </th>
                               <th
                                 scope='row'
+                                className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                              >
+                                <button
+                                  onClick={() => handleUpdate(item)}
+                                  className='relative  inline-flex items-center cursor-pointer'
+                                >
+                                  <div
+                                    className={`${item?.isAdmin
+                                      ? "w-11 h-6 rounded-full peer dark:bg-blue-600 after:translate-x-full rtl:after:-translate-x-full after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 bg-blue-600"
+                                      : "w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
+                                      }`}
+                                  />
+                                </button>
+                              </th>
+                              <th
+                                scope='row'
+                                className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                              >
+                                <button
+                                  onClick={() => handleUpdate2(item)}
+                                  className='relative inline-flex items-center cursor-pointer'
+                                >
+                                  <div
+                                    className={`${item?.isStaff
+                                      ? "w-11 h-6 rounded-full peer after:translate-x-full rtl:after:-translate-x-full  after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 bg-blue-600 dark:bg-blue-600"
+                                      : "w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
+                                      }`}
+                                  />
+                                </button>
+                              </th>
+                              <th
+                                scope='row'
                                 className='px-6 py-3 w-[200px] flex items-center gap-x-2 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                               >
+                                <button
+                                  type='button'
+                                  onClick={() => {
+                                    setModalOpenCreate(true)
+                                    setStaffModal(item)
+                                  }}
+                                  className='text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
+                                >
+                                  Cập nhật
+                                </button>
+
                                 <button
                                   type='button'
                                   onClick={() => handleDeleteStaff(item._id)}
@@ -178,8 +231,14 @@ const Users = () => {
           </>
         )}
       </div>
-      {/* <Modal data={showComment} isOpen={isModalOpen} onClose={() => setModalOpen(false)} /> */}
-      <CreateStaff isOpen={isModalOpenCreate} onClose={() => setModalOpenCreate(false)} />
+      <CreateStaff
+        data={staffModal}
+        isOpen={isModalOpenCreate}
+        onClose={() => {
+          setModalOpenCreate(false)
+          setStaffModal(initialFromState)
+        }}
+      />
     </>
   )
 }

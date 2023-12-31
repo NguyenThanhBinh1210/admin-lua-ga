@@ -22,7 +22,7 @@ const Dashboard = () => {
   const dataType = [
     {
       id: 1,
-      name: 'Total Orders',
+      name: 'Tổng đơn',
       data: data?.coutOrder,
       img: (
         <svg
@@ -43,7 +43,7 @@ const Dashboard = () => {
     },
     {
       id: 2,
-      name: 'Total Users',
+      name: 'Tổng người dùng',
       data: data?.countUser,
       img: (
         <svg
@@ -60,8 +60,8 @@ const Dashboard = () => {
     },
     {
       id: 3,
-      name: 'Total Recharge',
-      data: `$${FormatNumber(data?.totalRecharge)}`,
+      name: 'Tổng nạp',
+      data: `${FormatNumber(data?.totalRecharge)}đ`,
       img: (
         <svg width={40} height={40} viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
           <g clipPath='url(#clip0_291_1667)'>
@@ -91,8 +91,8 @@ const Dashboard = () => {
     },
     {
       id: 4,
-      name: 'Total Withdrawal',
-      data: `$${FormatNumber(data?.totalWithdrawal)}`,
+      name: 'Tổng rút',
+      data: `${FormatNumber(data?.totalWithdrawal)}đ`,
       img: (
         <svg width='70' height='70' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
           <path

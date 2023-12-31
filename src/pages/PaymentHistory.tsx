@@ -1,20 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import moment from 'moment'
-import { useState,useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { getRecharges, getWithrowRecharges } from '~/apis/admin.api'
 import { getTiso } from '~/apis/setting.api'
 import { UpdateHistory, UpdateWalletHistory } from '~/apis/payment.api'
 import CreatePayment from '~/components/Modal/CreatePayment'
+import { FormatNumber } from '~/hooks/useFormatNumber'
+import ConfirmModal from '~/components/Modal/ConfirmModal'
+import ConfirmModal2 from '~/components/Modal/ConfirmModal2'
+import { formatTime } from '~/utils/utils'
 
 const PaymentHistory = () => {
   const queryClient = useQueryClient()
   const [tiso, setTiso] = useState<any>()
   const [showComment, setShowComment] = useState<any | null>(null)
+  const [datas, setDatas] = useState<any | null>(null)
   const [isModalOpen, setModalOpen] = useState(false)
   const [isModalOpenCreate, setModalOpenCreate] = useState(false)
+  const [showLyDo, setShowLyDo] = useState(false)
+  const [showXacNhan, setShowXacNhan] = useState(false)
   const [type, setType] = useState(0)
-
   const itemsPerPage = 8
   useQuery({
     queryKey: ['get-tisos'],
@@ -25,30 +31,15 @@ const PaymentHistory = () => {
       setTiso(data.data[0].money)
     }
   })
-  // const [currentPageWitdraw, setCurrentPageWitdraw] = useState(1)
-  // const totalPagesWitdraw = Math.ceil(arrayWithoutInfoRechargeMoney?.length / itemsPerPage)
-  // const startIndexWitdraw = (currentPageWitdraw - 1) * itemsPerPage
-  // const endIndexWitdraw = startIndexWitdraw + itemsPerPage
-  // const currentDataWitdraw = arrayWithoutInfoRechargeMoney?.slice(startIndexWitdraw, endIndexWitdraw)
 
   const searchMutation = useMutation({
-    mutationFn: (userId: string) => getRecharges({ userId: userId })
+    mutationFn: (search?: string) => getRecharges({ userId: search, username: search })
   })
 
   const searchMutations = useMutation({
-    mutationFn: (userId: string) => getWithrowRecharges({ userId: userId })
+    mutationFn: (search?: string) => getWithrowRecharges({ userId: search, username: search })
   })
 
-  const updateMutations = useMutation({
-    mutationFn: ({ id, status }: { id: string; status: string }) => UpdateWalletHistory(id, status),
-    onSuccess: () => {
-      queryClient.invalidateQueries('update-all-historys')
-    }
-  })
-
-  const handleUpdate = (id: string, status: string) => {
-    updateMutations.mutate({ id, status })
-  }
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
@@ -95,7 +86,6 @@ const PaymentHistory = () => {
     }
   })
   const [dataRecharges, setRecharges] = useState<any>([])
-  console.log(dataRecharges)
   useQuery({
     queryKey: ['admin-all-history'],
     queryFn: () => {
@@ -106,11 +96,13 @@ const PaymentHistory = () => {
     }
   })
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      queryClient.invalidateQueries('admin-all-history');
-    }, 3000);
-    return () => clearInterval(intervalId);
-  }, [queryClient]);
+    if (search === '') {
+      const intervalId = setInterval(() => {
+        queryClient.invalidateQueries('admin-all-history')
+      }, 3000)
+      return () => clearInterval(intervalId)
+    }
+  }, [queryClient, search])
   const [currentPage, setCurrentPage] = useState(1)
   const totalPages = Math.ceil(dataRecharge.length / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage
@@ -155,13 +147,13 @@ const PaymentHistory = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className='block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                placeholder='Search...'
+                placeholder='Tìm kiếm theo userId hoặc username'
               />
               <button
                 type='submit'
                 className='text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'
               >
-                Search
+                Tìm kiếm
               </button>
             </div>
           </form>
@@ -192,27 +184,33 @@ const PaymentHistory = () => {
           <>
             <div className='flex justify-between'>
               <div>
-                {type === 0 && <h1 className='text-xl font-semibold mb-2'>Số giao dịch Nạp: {dataRecharge.length}</h1>}
-                {type === 1 && <h1 className='text-xl font-semibold mb-2'>Số giao dịch Rút: {dataRecharge.length}</h1>}
+                {type === 0 && (
+                  <h1 className='text-xl font-semibold mb-2 dark:text-white'>
+                    Số giao dịch Nạp: {dataRecharge.length}
+                  </h1>
+                )}
+                {type === 1 && (
+                  <h1 className='text-xl font-semibold mb-2 dark:text-white'>
+                    Số giao dịch Rút: {dataRecharges.length}
+                  </h1>
+                )}
               </div>
               <div className='flex gap-x-3 '>
                 <button
                   onClick={() => setType(0)}
-                  className={`w-[100px] cursor-pointer h-[40px] rounded-lg ${
-                    type === 0
-                      ? ' bg-blue-600 text-white '
-                      : ' ring-1 ring-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white '
-                  }  flex transition-all items-center justify-center `}
+                  className={`w-[100px] cursor-pointer h-[40px] rounded-lg ${type === 0
+                    ? ' bg-blue-600 text-white '
+                    : ' ring-1 ring-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white '
+                    }  flex transition-all items-center justify-center `}
                 >
                   Lịch sử nạp
                 </button>
                 <button
                   onClick={() => setType(1)}
-                  className={`w-[100px] cursor-pointer h-[40px] rounded-lg ${
-                    type === 1
-                      ? ' bg-blue-600 text-white '
-                      : ' ring-1 ring-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white '
-                  }  flex transition-all items-center justify-center `}
+                  className={`w-[100px] cursor-pointer h-[40px] rounded-lg ${type === 1
+                    ? ' bg-blue-600 text-white '
+                    : ' ring-1 ring-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white '
+                    }  flex transition-all items-center justify-center `}
                 >
                   Lịch sử rút
                 </button>
@@ -229,16 +227,19 @@ const PaymentHistory = () => {
                             STT
                           </th>
                           <th scope='col' className='px-6 py-3'>
-                            Điểm nạp
+                            Số tiền
+                          </th>
+                          <th scope='col' className='px-6 py-3'>
+                            Username
                           </th>
                           <th scope='col' className='px-6 py-3'>
                             UserId
                           </th>
                           <th scope='col' className='px-6 py-3'>
-                            Status
+                            Trạng thái
                           </th>
                           <th scope='col' className='px-6 py-3'>
-                            Ngày nạp
+                            Thời gian nạp
                           </th>
                         </tr>
                       </thead>
@@ -260,7 +261,13 @@ const PaymentHistory = () => {
                                   scope='row'
                                   className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                                 >
-                                  {item?.totalAmount}
+                                  {FormatNumber(item?.totalAmount)}₫
+                                </th>
+                                <th
+                                  scope='row'
+                                  className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                                >
+                                  {item?.userId?.username}
                                 </th>
                                 <th
                                   scope='row'
@@ -273,9 +280,8 @@ const PaymentHistory = () => {
                                   className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                                 >
                                   <span
-                                    className={` ${
-                                      item?.status === 'pending' ? 'bg-green-500' : 'bg-green'
-                                    } text-white px-2 py-0.5 pb-1 text-xs rounded-md`}
+                                    className={` ${item?.status === 'pending' ? 'bg-green-500' : 'bg-green'
+                                      } text-white px-2 py-0.5 pb-1 text-xs rounded-md`}
                                   >
                                     Done
                                   </span>
@@ -284,7 +290,8 @@ const PaymentHistory = () => {
                                   scope='row'
                                   className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                                 >
-                                  {moment(item?.createdAt).format('DD/MM/YYYY')}
+                                  {formatTime(item?.createdAt)}
+
                                 </th>
                               </tr>
                             )
@@ -364,26 +371,30 @@ const PaymentHistory = () => {
                           <th scope='col' className='px-6 py-3'>
                             STT
                           </th>
-                          <th scope='col' className='px-6 py-3'>
-                            Điểm rút
-                          </th>
+
                           <th scope='col' className='px-6 py-3'>
                             Số tiền
                           </th>
                           <th scope='col' className='px-6 py-3'>
+                            Username
+                          </th>
+                          <th scope='col' className='px-6 py-3'>
                             UserId
                           </th>
-                          <th scope='col' className='px-6 py-3'>
+                          <th scope='col' className='px-6 py-3 min-w-[150px]'>
+                            Chủ tài khoản
+                          </th>
+                          <th scope='col' className='px-6 py-3 min-w-[150px]'>
                             Số tài khoản
                           </th>
-                          <th scope='col' className='px-6 py-3'>
+                          <th scope='col' className='px-6 py-3 min-w-[150px]'>
                             Tên ngân hàng
                           </th>
-                          <th scope='col' className='px-6 py-3'>
-                            Status
+                          <th scope='col' className='px-6 py-3 min-w-[150px]'>
+                            Trạng thái
                           </th>
                           <th scope='col' className='px-6 py-3'>
-                            Ngày rút
+                            Thời gian rút
                           </th>
                           <th scope='col' className='px-6 py-3'>
                             Hành động
@@ -404,28 +415,18 @@ const PaymentHistory = () => {
                                 >
                                   {'#' + (idx + 1)}
                                 </th>
-                                {/* <th
-                                  scope='row'
-                                  className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
-                                >
-<<<<<<< HEAD
-                                  {item?.codeOder}
-                                </th> */}
                                 <th
                                   scope='row'
                                   className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                                 >
-                                  {item?.totalAmount}
+                                  {FormatNumber(item?.totalAmount)}₫
                                 </th>
+
                                 <th
                                   scope='row'
                                   className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                                 >
-                                  {new Intl.NumberFormat('vi-VN', {
-                                    style: 'currency',
-                                    currency: 'VND',
-                                    minimumFractionDigits: 0
-                                  }).format(item.totalAmount * (tiso as number))}
+                                  {item?.userId?.username}
                                 </th>
                                 <th
                                   scope='row'
@@ -433,7 +434,12 @@ const PaymentHistory = () => {
                                 >
                                   {item?.userId?.idUser}
                                 </th>
-
+                                <th
+                                  scope='row'
+                                  className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                                >
+                                  {item?.nameUserBank}
+                                </th>
                                 <th
                                   scope='row'
                                   className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
@@ -451,15 +457,14 @@ const PaymentHistory = () => {
                                   className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                                 >
                                   <span
-                                    className={`${
-                                      item?.status === 'pending'
-                                        ? 'bg-yellow-500'
-                                        : item?.status === 'done'
+                                    className={`${item?.status === 'pending'
+                                      ? 'bg-yellow-500'
+                                      : item?.status === 'done'
                                         ? 'bg-green-500'
                                         : item?.status === 'false'
-                                        ? 'bg-red-500'
-                                        : ''
-                                    } text-white px-2 py-0.5 pb-1 text-xs rounded-md`}
+                                          ? 'bg-red-500'
+                                          : ''
+                                      } text-white px-2 py-0.5 pb-1 text-xs rounded-md`}
                                   >
                                     {item?.status}
                                   </span>
@@ -468,30 +473,52 @@ const PaymentHistory = () => {
                                   scope='row'
                                   className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                                 >
-                                  {moment(item?.createdAt).format('DD/MM/YYYY')}
+                                  {formatTime(item?.createdAt)}
                                 </th>
                                 <th
                                   scope='row'
                                   className='px-6 py-3 w-[200px] flex items-center gap-x-2 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                                 >
-                                  <button
-                                    type='button'
-                                    onClick={() => {
-                                      handleUpdate(item._id, 'done')
-                                    }}
-                                    className='text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
-                                  >
-                                    Xác nhận
-                                  </button>
-                                  <button
-                                    type='button'
-                                    onClick={() => {
-                                      handleUpdate(item._id, 'false')
-                                    }}
-                                    className='text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
-                                  >
-                                    Huỷ
-                                  </button>
+                                  {item.status === 'pending' && (
+                                    <button
+                                      type='button'
+                                      onClick={() => {
+                                        setShowXacNhan(true)
+                                        setDatas(item)
+                                      }}
+                                      className='text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
+                                    >
+                                      Xác nhận
+                                    </button>
+                                  )}
+                                  {item.status !== 'done' && (
+                                    <>
+                                      {item.nfo === '' && (
+                                        <button
+                                          type='button'
+                                          onClick={() => {
+                                            setShowLyDo(true)
+                                            setDatas(item)
+                                          }}
+                                          className='text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900'
+                                        >
+                                          Huỷ
+                                        </button>
+                                      )}
+                                      {item.nfo !== '' && (
+                                        <button
+                                          type='button'
+                                          onClick={() => {
+                                            setShowLyDo(true)
+                                            setDatas(item)
+                                          }}
+                                          className='text-white bg-purple-700 hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900'
+                                        >
+                                          Lý do
+                                        </button>
+                                      )}
+                                    </>
+                                  )}
                                 </th>
                               </tr>
                             )
@@ -574,6 +601,8 @@ const PaymentHistory = () => {
           setShowComment(null)
         }}
       />
+      <ConfirmModal data={datas} isOpen={showLyDo} onClose={() => setShowLyDo(false)}></ConfirmModal>
+      <ConfirmModal2 data={datas} isOpen={showXacNhan} onClose={() => setShowXacNhan(false)}></ConfirmModal2>
     </>
   )
 }

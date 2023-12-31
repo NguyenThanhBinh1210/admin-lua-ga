@@ -44,17 +44,7 @@ const Header = () => {
       </div>
       <div className='py-4 overflow-y-auto flex flex-col justify-between h-[100%]'>
         <ul className='space-y-2'>
-          {profile?.isAdmin && (
-            <li>
-              <Link
-                to='/'
-                className='flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg pl-4 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700'
-              >
-                <button>Dashboard</button>
-              </Link>
-            </li>
-          )}
-          {profile?.isStaff && (
+          {profile?.isAdmin || profile?.isStaff && (
             <li>
               <Link
                 to='/'
@@ -76,7 +66,6 @@ const Header = () => {
 
           {profile?.isAdmin && (
             <>
-
               <li>
                 <Link
                   to='/user'
@@ -85,40 +74,41 @@ const Header = () => {
                   <button>Nhân viên</button>
                 </Link>
               </li>
-              <li>
-                <Link
-                  to='/custommer'
-                  className='flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg pl-4 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700'
-                >
-                  <button>Khách hàng</button>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to='/payment-history'
-                  className='flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg pl-4 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700'
-                >
-                  <button>Lịch sử Nạp / Rút</button>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to='/order'
-                  className='flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg pl-4 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700'
-                >
-                  <button>Lịch sử đặt hàng</button>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to='/settings'
-                  className='flex gap-x-3 pl-4 items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
-                >
-                  <div>Cấu hình</div>
-                </Link>
-              </li>
+
             </>
           )}
+          <li>
+            <Link
+              to='/custommer'
+              className='flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg pl-4 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700'
+            >
+              <button>Khách hàng</button>
+            </Link>
+          </li>
+          <li>
+            <Link
+              to='/payment-history'
+              className='flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg pl-4 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700'
+            >
+              <button>Lịch sử Nạp / Rút</button>
+            </Link>
+          </li>
+          <li>
+            <Link
+              to='/order'
+              className='flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg pl-4 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700'
+            >
+              <button>Lịch sử đặt hàng</button>
+            </Link>
+          </li>
+          <li>
+            <Link
+              to='/settings'
+              className='flex gap-x-3 pl-4 items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
+            >
+              <div>Cấu hình</div>
+            </Link>
+          </li>
         </ul>
         <ul className='mt-auto'>
           <li className=''>

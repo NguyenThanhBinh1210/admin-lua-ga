@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useMutation, useQuery } from 'react-query'
+import { toast } from 'react-toastify'
 import {
   getCountDown,
   getTiso,
@@ -8,14 +9,18 @@ import {
   updateRandomProduct,
   updateRandomFaction,
   getRandomProduct,
-  getRandomFaction
+  getRandomFaction,
+  getGioiHan,
+  updateGioiHan
 } from '~/apis/setting.api'
 const Settings = () => {
   const [cowndown, setCoundown] = useState<any>()
   const [tiso, setTiso] = useState<any>()
   const [show1, setShow1] = useState<boolean>(false)
   const [show2, setShow2] = useState<boolean>(false)
+  const [show3, setShow3] = useState<boolean>(false)
   const [product, setProduct] = useState<any>()
+  const [gioihan, setGioihan] = useState<any>()
   const [faction, setFaction] = useState<any>()
 
   useQuery({
@@ -26,6 +31,15 @@ const Settings = () => {
     onSuccess: (data) => {
       console.log('faction', data.data.number)
       setFaction(data.data.number)
+    }
+  })
+  useQuery({
+    queryKey: ['get-gioi-han'],
+    queryFn: () => {
+      return getGioiHan()
+    },
+    onSuccess: (data) => {
+      setGioihan(data.data.number)
     }
   })
 
@@ -54,7 +68,7 @@ const Settings = () => {
       return getTiso()
     },
     onSuccess: (data) => {
-      setTiso(data.data[0].money)
+      setTiso(data.data[0].numberOder)
     }
   })
   const mutationUpdateTiso = useMutation((body: any) => {
@@ -69,13 +83,16 @@ const Settings = () => {
   const mutationUpdateCountDown = useMutation((body: any) => {
     return updateCountDown(body)
   })
+  const mutationUpdateGioiHan = useMutation((body: any) => {
+    return updateGioiHan(body)
+  })
   const handleUpdateTiso = () => {
     const body = {
-      money: tiso
+      numberOder: tiso
     }
     mutationUpdateTiso.mutate(body, {
       onSuccess: () => {
-        alert('Cập nhật tỉ số hối đoái thành công!')
+        alert('Cập nhật % phí giao dịch thành công!')
         setShow1(false)
       },
       onError: () => {
@@ -104,7 +121,7 @@ const Settings = () => {
     }
     mutationUpdateFaction.mutate(body, {
       onSuccess: () => {
-        console.log(body), alert('Thay đổi tỉ lệ thành công!')
+        alert('Thay đổi tỉ lệ thành công!')
         setShow1(false)
         setFaction(product)
       },
@@ -127,19 +144,25 @@ const Settings = () => {
       }
     })
   }
+  const handleUpdateGioiHan = () => {
+    const body = {
+      number: gioihan
+    }
+    mutationUpdateGioiHan.mutate(body, {
+      onSuccess: () => {
+        toast.success('Cập nhật giới hạn tiền rút thành công!')
+        setShow3(false)
+      },
+      onError: () => {
+        toast.success('Lỗi, hãy thử lại!')
+      }
+    })
+  }
   return (
-    <div className='grid grid-cols-4 gap-5'>
-      <div className='col-span-4 tablet:col-span-2 mobile:col-span-4'>
-        <label htmlFor='tiso'>Phí rút tiền</label>
+    <div className='grid grid-cols-4 gap-5 dark:text-white'>
+      {/* <div className='col-span-4 tablet:col-span-2 mobile:col-span-4'>
+        <label htmlFor='tiso' className='dark:text-white'>Phí rút tiền (%)</label>
         <div className='flex items-center gap-x-2 mt-2'>
-          <input
-            id=''
-            type='text'
-            placeholder='1 điểm'
-            disabled
-            className='text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none  bg-transparent'
-          />
-          =
           <input
             id='tiso'
             type='text'
@@ -148,8 +171,8 @@ const Settings = () => {
               setTiso(e.target.value)
               setShow1(true)
             }}
-            placeholder='Vnđ'
-            className='text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none  bg-transparent'
+            placeholder='0'
+            className='text-center w-[100px] dark:bg-gray-600 border border-slate-200 rounded-lg py-3 px-5 outline-none  bg-transparent'
           />
           {show1 && (
             <button onClick={handleUpdateTiso} className='bg-blue-500 py-3 px-5 rounded-lg text-white'>
@@ -157,9 +180,11 @@ const Settings = () => {
             </button>
           )}
         </div>
-      </div>
+      </div> */}
       <div className='col-span-4 tablet:col-span-2 mobile:col-span-4'>
-        <label htmlFor='time'>Thời gian đếm ngược</label>
+        <label htmlFor='time' className='dark:text-white'>
+          Thời gian đếm ngược (phút)
+        </label>
         <div className='flex items-center gap-x-2 mt-2'>
           <input
             value={cowndown}
@@ -170,7 +195,7 @@ const Settings = () => {
             id='time'
             type='text'
             placeholder='phút'
-            className='text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none  bg-transparent'
+            className='text-center dark:bg-gray-600 w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none  bg-transparent'
           />
           {show2 && (
             <button onClick={handleUpdateCountDowm} className='bg-blue-500 py-3 px-5 rounded-lg text-white'>
@@ -179,73 +204,84 @@ const Settings = () => {
           )}
         </div>
       </div>
-      {/* <div className='col-span-4 tablet:col-span-2 mobile:col-span-4'>
-        <label htmlFor='history'>Lịch sử hiển thị tối đa</label>
+      <div className='col-span-4 tablet:col-span-2 mobile:col-span-4'>
+        <label htmlFor='time'>Số tiền rút tối thiểu (đ)</label>
         <div className='flex items-center gap-x-2 mt-2'>
           <input
-            id='history'
+            value={gioihan}
+            onChange={(e) => {
+              setGioihan(e.target.value)
+              setShow3(true)
+            }}
+            id='time'
             type='text'
-            placeholder='dòng'
-            className='text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none  bg-transparent'
+            placeholder='đ'
+            className='text-center w-[100px] dark:bg-gray-600 border border-slate-200 rounded-lg py-3 px-5 outline-none  bg-transparent'
           />
+          {show3 && (
+            <button onClick={handleUpdateGioiHan} className='bg-blue-500 py-3 px-5 rounded-lg text-white'>
+              Xác nhận
+            </button>
+          )}
         </div>
-      </div> */}
+      </div>
+
       <div className='col-span-4 tablet:col-span-2 mobile:col-span-4'>
-        <label htmlFor='radom'>Tỉ lệ random faction</label>
+        <label htmlFor='radom'>Tỉ lệ random thời trang</label>
         <div className='flex items-center gap-x-2 mt-2'>
           <button
             id='radom'
             placeholder='%'
-            className={`text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none   ${
+            className={`text-center dark:text-white w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none   ${
               faction === '0' ? 'bg-green-800 text-gray-50' : 'bg-transparent text-slate-950'
             }`}
             onClick={() => handleUpdateFaction('0')}
           >
             {' '}
-            random
+            Random
           </button>
           <button
             id='radom'
             placeholder='%'
-            className={`text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none ${
+            className={`text-center dark:text-white w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none ${
               faction === '1' ? 'bg-green-800 text-gray-50' : 'bg-transparent text-slate-950'
             } `}
             onClick={() => handleUpdateFaction('1')}
           >
             {' '}
-            chẳn
+            Chẳn
           </button>
           <button
             id='radom'
             placeholder='%'
-            className={`text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none  bg-transparent  ${
+            className={`text-center dark:text-white w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none ${
               faction === '2' ? 'bg-green-800 text-gray-50' : 'bg-transparent text-slate-950'
             }`}
             onClick={() => handleUpdateFaction('2')}
           >
             {' '}
-            lẻ
+            Lẻ
           </button>
         </div>
       </div>
       <div className='col-span-4 tablet:col-span-2 mobile:col-span-4'>
-        <label htmlFor='radom'>Tỉ lệ random Product</label>
-        <div className='flex items-center gap-x-2 mt-2'>
+        <label htmlFor='radom'>Tỉ lệ random sản phẩm</label>
+        <div className='flex items-center gap-x-2 mt-2 '>
           <button
             id='radom'
             placeholder='%'
-            className={`text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none  ${
+            className={`text-center dark:text-white w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none  ${
               product === '0' ? 'bg-green-800 text-gray-50' : 'bg-transparent text-slate-950'
             }`}
             onClick={() => handleUpdateProduct('0')}
           >
             {' '}
-            random
+            Random
           </button>
           <button
             id='radom'
             placeholder='%'
-            className={`text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none   ${
+            className={`text-center dark:text-white w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none   ${
               product === '1' ? 'bg-green-800 text-gray-50' : 'bg-transparent text-slate-950'
             }`}
             onClick={() => handleUpdateProduct('1')}
@@ -256,13 +292,13 @@ const Settings = () => {
           <button
             id='radom'
             placeholder='%'
-            className={`text-center w-[100px] border border-slate-200 rounded-lg py-3 px-5 outline-none   ${
+            className={`text-center w-[100px] dark:text-white border border-slate-200 rounded-lg py-3 px-5 outline-none   ${
               product === '2' ? 'bg-green-800 text-gray-50' : 'bg-transparent text-slate-950'
             }`}
             onClick={() => handleUpdateProduct('2')}
           >
             {' '}
-            lẻ
+            Lẻ
           </button>
         </div>
       </div>

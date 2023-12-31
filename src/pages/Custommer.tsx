@@ -11,30 +11,33 @@ import Paginate from '~/components/Pagination/Paginate'
 import usePagination from '~/hooks/usePagination'
 
 const Custommer = () => {
+  const initialFromState = {
+    name: '',
+    username: '',
+    password: '',
+    bankName: '',
+    banKNumber: '',
+    nameUserBank: ''
+  }
   const [staff, setStaff] = useState<any>([])
   const [userId, setUserId] = useState<string>('')
   const [search, setSearch] = useState<string>('')
   const { currentPage, totalPages, currentData, setCurrentPage } = usePagination(8, staff)
-  const [showComment, setShowComment] = useState()
+  const [showUser, setShowComment] = useState<any>(null)
   const [isModalOpen, setModalOpen] = useState(false)
   const [isOpenRecharge, setOpenRecharge] = useState(false)
-
-  // const updateMutations = useMutation({
-  //   mutationFn: ({ id, body }: { id: string; body: { isLook?: boolean; isDongBang?: boolean } }) => updateStaff(id, body),
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries('update-order-historys');
-  //   },
-  // });
-
-  // const handleUpdate = (id: string, body: { isLook?: boolean; isDongBang?: boolean }) => {
-  //   updateMutations.mutate({ id, body });
-  // };
-
   const searchMutation = useMutation({
     mutationFn: (id: string) => searchUser(id)
   })
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteStaff(id)
+  })
+  const updateMutation = useMutation((body: any) => {
+    const data = {
+      isLook: body.isLook,
+      isDongBang: body.isDongBang
+    }
+    return updateStaff(body?._id, data)
   })
   const queryClient = useQueryClient()
   const handleDeleteStaff = (id: string) => {
@@ -59,11 +62,13 @@ const Custommer = () => {
     cacheTime: 30000
   })
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      queryClient.invalidateQueries(['user', 3])
-    }, 2000)
-    return () => clearInterval(intervalId)
-  }, [queryClient])
+    if (search === '') {
+      const intervalId = setInterval(() => {
+        queryClient.invalidateQueries({ queryKey: ['user', 3] })
+      }, 2000)
+      return () => clearInterval(intervalId)
+    }
+  }, [queryClient, search])
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page)
@@ -85,7 +90,6 @@ const Custommer = () => {
     e.preventDefault()
     searchMutation.mutate(search, {
       onSuccess: (data) => {
-        // console.log(data.data);
         setStaff(data.data)
         setCurrentPage(1)
       },
@@ -95,29 +99,33 @@ const Custommer = () => {
     })
   }
 
-  const [isActive, setIsActive] = useState<{ [key: string]: boolean }>({})
-  const [isActives, setIsActives] = useState<{ [key: string]: boolean }>({})
-  const handleUpdate = (userId: string, actionType: 'dongBang' | 'moKhoa', newState: boolean) => {
-    const body = { isDongBang: actionType === 'dongBang' ? newState : undefined, isLook: actionType === 'moKhoa' ? newState : undefined };
-    
-    updateStaff(userId, body)
-      .then(() => {
-        const queryKey = actionType === 'dongBang' ? 'update-order-historys' : 'update-order-historyss';
-        queryClient.invalidateQueries(queryKey);
-      })
-      .catch((error) => {
-        // Xử lý lỗi nếu cần
-        console.error('Error updating staff:', error);
-      });
-  };
-  const handleClick = (itemId: string) => {
-    handleUpdate(itemId, 'dongBang', !isActive[itemId]);
-  };
-  
-  const handleClicks = (itemId: string) => {
-    handleUpdate(itemId, 'moKhoa', !isActives[itemId]);
-  };
-    
+  const handleUpdateLook = (item: any) => {
+    const newData = {
+      _id: item._id,
+      isLook: item.isLook ? false : true
+    }
+    updateMutation.mutate(newData, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['user', 3] })
+
+        toast.success('Thành công!')
+      }
+    })
+  }
+  const handleUpdateDongBang = (item: any) => {
+    const newData = {
+      _id: item._id,
+      isDongBang: item.isDongBang ? false : true
+    }
+    updateMutation.mutate(newData, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['user', 3] })
+
+        toast.success('Thành công!')
+      }
+    })
+  }
+
   return (
     <>
       <div className='flex justify-between mb-3 mobile:flex-col tablet:flex-col'>
@@ -153,13 +161,13 @@ const Custommer = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className='block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                placeholder='Tìm theo Id tài khoản...'
+                placeholder='Tìm theo userId hoặc username...'
               />
               <button
                 type='submit'
                 className='text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'
               >
-                Search
+                Tìm kiếm
               </button>
             </div>
           </form>
@@ -182,28 +190,30 @@ const Custommer = () => {
                           STT
                         </th>
                         <th scope='col' className='px-6 py-3'>
-                          Avatar
-                        </th>
-
-                        <th scope='col' className='px-6 py-3'>
                           Username
                         </th>
-                        <th scope='col' className='px-6 py-3'>
+                        <th scope='col' className='px-6 py-3 min-w-[150px]'>
                           Id tài khoản
                         </th>
-                        <th scope='col' className='px-6 py-3'>
+                        <th scope='col' className='px-6 py-3 min-w-[180px]'>
                           Id người giới thiệu
                         </th>
                         <th scope='col' className='px-6 py-3'>
-                          Tên ngân hàng
+                          Chủ tài khoản
                         </th>
                         <th scope='col' className='px-6 py-3'>
+                          Ngân hàng
+                        </th>
+                        <th scope='col' className='px-6 py-3 min-w-[150px]'>
                           Số tài khoản
                         </th>
                         <th scope='col' className='px-6 py-3'>
                           Số tiền
                         </th>
                         <th scope='col' className='px-6 py-3'>
+                          Chặn
+                        </th>
+                        <th scope='col' className='px-6 py-3 min-w-[130px]'>
                           Đóng băng
                         </th>
                         <th scope='col' className='px-6 py-3 text-center'>
@@ -229,37 +239,6 @@ const Custommer = () => {
                                 scope='row'
                                 className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                               >
-                                {item?.avatar[0] == null && (
-                                  <div className='relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600'>
-                                    <svg
-                                      className='absolute w-12 h-12 text-gray-400 -left-1'
-                                      fill='currentColor'
-                                      viewBox='0 0 20 20'
-                                      // style={{ borderRadius: '50%', width: '40px', height: '40px' }}
-                                      xmlns='http://www.w3.org/2000/svg'
-                                    >
-                                      <path
-                                        fillRule='evenodd'
-                                        // style={{ borderRadius: '50%', width: '40px', height: '40px' }}
-                                        d='M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z'
-                                        clipRule='evenodd'
-                                      ></path>
-                                    </svg>
-                                  </div>
-                                )}
-                                {item?.avatar[0] && (
-                                  <img
-                                    className='aa'
-                                    style={{ borderRadius: '50%', width: '40px', height: '40px' }}
-                                    src={item.avatar}
-                                    alt='avatar'
-                                  />
-                                )}
-                              </th>
-                              <th
-                                scope='row'
-                                className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
-                              >
                                 {item.username}
                               </th>
                               <th
@@ -273,6 +252,12 @@ const Custommer = () => {
                                 className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                               >
                                 {item.idRef}
+                              </th>
+                              <th
+                                scope='row'
+                                className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                              >
+                                {item?.nameUserBank}
                               </th>
                               <th
                                 scope='row'
@@ -298,13 +283,24 @@ const Custommer = () => {
                               </th>
                               <th
                                 scope='row'
-                                className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                                className=' px-6 py-3 gap-x-2 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                               >
                                 <button
-                                  className={`py-2 px-4 text-white font-medium rounded-full ${
-                                    item.isDongBang ? 'bg-green-500' : 'bg-gray-300'
-                                  }`}
-                                  onClick={() => handleClick(item._id)}
+                                  className={` text-white w-10 h-full font-medium rounded-full ${item.isLook ? 'bg-green-500' : 'bg-gray-300'
+                                    }`}
+                                  onClick={() => handleUpdateLook(item)}
+                                >
+                                  {item.isLook ? 'Mở' : 'Chặn'}
+                                </button>
+                              </th>
+                              <th
+                                scope='row'
+                                className=' px-6 py-3 gap-x-2 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                              >
+                                <button
+                                  className={` text-white mx-auto block w-10 h-full font-medium rounded-full ${item.isDongBang ? 'bg-green-500' : 'bg-gray-300'
+                                    }`}
+                                  onClick={() => handleUpdateDongBang(item)}
                                 >
                                   {item.isDongBang ? 'Bật' : 'Tắt'}
                                 </button>
@@ -314,19 +310,10 @@ const Custommer = () => {
                                 className='px-6 py-3 w-[200px] flex items-center gap-x-2 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                               >
                                 <button
-                                  title='Mở hoặc khoá tài khoản'
-                                  className={`py-2 px-4 text-white font-medium rounded-full ${
-                                    item.isDongBang ? 'bg-green-600' : 'bg-gray-400'
-                                  }`}
-                                  onClick={() => handleClicks(item._id)}
-                                >
-                                  {item.isLook ? 'Mở' : 'Khoá'}
-                                </button>
-                                <button
                                   type='button'
                                   onClick={() => {
-                                    setOpenRecharge(true)
-                                    setUserId(item._id)
+                                    setModalOpen(true)
+                                    setShowComment(item)
                                   }}
                                   title='Xem và cập nhật khách hàng'
                                   className={`text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-yellow-900 `}
@@ -374,7 +361,14 @@ const Custommer = () => {
           setUserId('')
         }}
       />
-      <Modal data={showComment} isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
+      <Modal
+        data={showUser}
+        isOpen={isModalOpen}
+        onClose={() => {
+          setModalOpen(false)
+          setShowComment(initialFromState)
+        }}
+      />
     </>
   )
 }
