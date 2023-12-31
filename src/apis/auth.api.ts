@@ -9,7 +9,7 @@ export const loginAccount = (body: { email: string; password: string }) => http.
 export const logout = () => http.post('/user/log-out')
 export const updateUser = (id: unknown, params?: Omit<BodyUpdateProfile, '_id'>) =>
   http.put<User>(`/user/update-user/${id}`, params)
-export const updateRole = (id: unknown, body: any) => http.patch(`/user/update-role/${id}`, body)
+export const updateRole = (id: unknown, body: any) => http.patch(`/v1/user/update-role/${id}`, body)
 export const getUser = (id: unknown) => http.get<User>(`/user/get-details/${id}`)
 // export const refreshToken = (body: { refresh_token: string }) => http.post('/user/refresh-token', body)
 export const refreshToken = () =>

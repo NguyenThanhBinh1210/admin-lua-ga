@@ -160,7 +160,7 @@ const Settings = () => {
   }
   return (
     <div className='grid grid-cols-4 gap-5 dark:text-white'>
-      <div className='col-span-4 tablet:col-span-2 mobile:col-span-4'>
+      {/* <div className='col-span-4 tablet:col-span-2 mobile:col-span-4'>
         <label htmlFor='tiso' className='dark:text-white'>Phí rút tiền (%)</label>
         <div className='flex items-center gap-x-2 mt-2'>
           <input
@@ -180,7 +180,7 @@ const Settings = () => {
             </button>
           )}
         </div>
-      </div>
+      </div> */}
       <div className='col-span-4 tablet:col-span-2 mobile:col-span-4'>
         <label htmlFor='time' className='dark:text-white'>Thời gian đếm ngược (phút)</label>
         <div className='flex items-center gap-x-2 mt-2'>

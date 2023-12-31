@@ -11,7 +11,7 @@ const CreateRecharge = ({ isOpen, onClose, userId }: { isOpen: boolean; onClose:
       onClose()
     }
   }
-
+  const [value, setValue] = useState(0)
   const initialFromState = {
     userId: '',
     points: ''
@@ -21,14 +21,12 @@ const CreateRecharge = ({ isOpen, onClose, userId }: { isOpen: boolean; onClose:
     return createRecharge(body)
   })
   const [formState, setFormState] = useState(initialFromState)
-  const handleChange = (name: string) => (event: any) => {
-    setFormState((prev) => ({ ...prev, [name]: Number(event.target.value) }))
-  }
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const newData = {
       ...formState,
-      userId: userId
+      userId: userId,
+      points: Number(value)
     }
     mutation.mutate(newData, {
       onSuccess: () => {
@@ -41,6 +39,21 @@ const CreateRecharge = ({ isOpen, onClose, userId }: { isOpen: boolean; onClose:
         toast.warn(error?.response.data.errMessage)
       }
     })
+  }
+
+  const [valueView, setValueView] = useState("0")
+  const handleInputChange = (event: any) => {
+    const inputValue = event.target.value
+    if (inputValue === '') {
+      setValue(0)
+    }
+    setValue(inputValue.replace(/[^0-9]/g, ''))
+
+    let value = event.target.value;
+    value = value.replace(/[^0-9]/g, '');
+
+    value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    setValueView(value);
   }
   return (
     <div
@@ -80,13 +93,13 @@ const CreateRecharge = ({ isOpen, onClose, userId }: { isOpen: boolean; onClose:
             <span className='sr-only'>Close modal</span>
           </button>
           <div className='px-6 py-6 lg:px-8'>
-            <h3 className='mb-4 text-xl font-medium text-gray-900 dark:text-white'>Nạp điểm</h3>
+            <h3 className='mb-4 text-xl font-medium text-gray-900 dark:text-white'>Nạp tiền</h3>
             <form className='space-y-6' action='#' autoComplete='false' onSubmit={(e) => handleSubmit(e)}>
 
 
               <div>
                 <label htmlFor='points' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
-                  Số điểm
+                  Số tiền (vnđ)
                 </label>
                 <input
                   type='text'
@@ -94,8 +107,8 @@ const CreateRecharge = ({ isOpen, onClose, userId }: { isOpen: boolean; onClose:
                   id='points'
                   className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
                   placeholder=''
-                  value={formState?.points}
-                  onChange={handleChange('points')}
+                  onChange={handleInputChange}
+                  value={valueView}
                 />
               </div>
 

@@ -78,7 +78,7 @@ const Custommer = () => {
     searchMutation.mutate('', {
       onSuccess: (data) => {
         setSearch('')
-        setStaff(data.data.user.filter((user: any) => !user.isStaff).filter((user: any) => !user.isAdmin))
+        setStaff(data.data)
         setCurrentPage(1)
       },
       onError: () => {

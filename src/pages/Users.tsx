@@ -29,10 +29,10 @@ const Users = () => {
     mutationFn: (id: string) => deleteStaff(id)
   })
   const updateMutation = useMutation({
-    mutationFn: (item: any) => updateRole(item._id, { isAdmin: item?.isAdmin ? false : true })
+    mutationFn: (item: any) => updateRole(item._id, { isAdmin: item?.isAdmin ? 'false' : 'true' })
   })
   const updateMutation2 = useMutation({
-    mutationFn: (item: any) => updateRole(item._id, { isStaff: item?.isStaff ? false : true })
+    mutationFn: (item: any) => updateRole(item._id, { isStaff: item?.isStaff ? 'false' : 'true' })
   })
   const queryClient = useQueryClient()
   const handleDeleteStaff = (id: string) => {
@@ -52,7 +52,8 @@ const Users = () => {
       return getAllStaff()
     },
     onSuccess: (data) => {
-      setStaff(data.data.user.filter((user: any) => user.isStaff && !user.isAdmin))
+      console.log(data.data.user)
+      setStaff(data.data.user.filter((user: any) => user.isStaff))
     },
     cacheTime: 30000
   })
@@ -65,6 +66,7 @@ const Users = () => {
     e.preventDefault()
     searchMutation.mutate(search, {
       onSuccess: (data) => {
+        console.log(data.data)
         setStaff(data.data)
         setCurrentPage(1)
       },
@@ -92,7 +94,7 @@ const Users = () => {
   return (
     <>
       <SearchHeader
-        notShowSearch
+        // notShowSearch
         count={staff.length}
         search={search}
         setSearch={setSearch}
