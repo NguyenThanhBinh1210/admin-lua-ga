@@ -1,6 +1,7 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useMutation, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
+import { updateRole } from '~/apis/auth.api'
 import { createStaff } from '~/apis/product.api'
 
 export interface Staff {
@@ -12,15 +13,14 @@ export interface Staff {
   isStaff: boolean
   isAdmin: boolean
 }
-const CreateStaff = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
+const CreateStaff = ({ isOpen, data, onClose }: { isOpen: boolean; data: any; onClose: () => void }) => {
   const modalRef = useRef<HTMLDivElement>(null)
-
   const handleModalClick = (e: React.MouseEvent) => {
     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
       onClose()
+      setFormState(initialFromState)
     }
   }
-
   const initialFromState = {
     name: '',
     username: '',
@@ -30,23 +30,49 @@ const CreateStaff = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
   const mutation = useMutation((body: any) => {
     return createStaff(body)
   })
+  const updateMutation = useMutation((body: any) => {
+    return updateRole(body._id, body)
+  })
   const [formState, setFormState] = useState(initialFromState)
   const handleChange = (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
     setFormState((prev) => ({ ...prev, [name]: event.target.value }))
   }
+  useEffect(() => {
+    if (data) {
+      setFormState(data)
+    }
+  }, [data])
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    mutation.mutate(formState, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['user', 3] })
-        setFormState(initialFromState)
-        toast.success('Thành công!')
-        onClose()
-      },
-      onError: (error: any) => {
-        toast.warn(error?.response.data.errMessage)
+    if (data.username === '') {
+      mutation.mutate(formState, {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['user', 3] })
+          setFormState(initialFromState)
+          toast.success('Thành công!')
+          onClose()
+          setFormState(initialFromState)
+        },
+        onError: (error: any) => {
+          toast.warn(error?.response.data.errMessage)
+        }
+      })
+    } else {
+      const newBody = {
+        _id: data?._id,
+        password: formState.password,
+        name: formState.name
       }
-    })
+      updateMutation.mutate(newBody, {
+        onSuccess: () => {
+          toast.success('Thành công!')
+        },
+        onError: () => {
+          toast.warn('Lỗi, hãy thử lại!')
+
+        }
+      })
+    }
   }
   return (
     <div
@@ -63,7 +89,10 @@ const CreateStaff = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
       >
         <div className='relative bg-white rounded-lg shadow dark:bg-gray-700'>
           <button
-            onClick={onClose}
+            onClick={() => {
+              onClose()
+              setFormState(initialFromState)
+            }}
             type='button'
             className='absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white'
             data-modal-hide='authentication-modal'
@@ -86,10 +115,25 @@ const CreateStaff = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
             <span className='sr-only'>Close modal</span>
           </button>
           <div className='px-6 py-6 lg:px-8'>
-            <h3 className='mb-4 text-xl font-medium text-gray-900 dark:text-white'>Tạo nhân viên</h3>
+            <h3 className='mb-4 text-xl font-medium text-gray-900 dark:text-white'>
+              {data.username !== '' ? 'Cập nhật' : 'Tạo'} nhân viên
+            </h3>
             <form className='space-y-6' action='#' autoComplete='false' onSubmit={(e) => handleSubmit(e)}>
-
-
+              <div>
+                <label htmlFor='username' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
+                  Tài khoản
+                </label>
+                <input
+                  type='text'
+                  name='username'
+                  id='username'
+                  disabled
+                  className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
+                  placeholder='Tài khoản'
+                  value={formState?.username}
+                  onChange={handleChange('username')}
+                />
+              </div>
               <div>
                 <label htmlFor='name' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
                   Tên
@@ -104,20 +148,7 @@ const CreateStaff = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                   onChange={handleChange('name')}
                 />
               </div>
-              <div>
-                <label htmlFor='username' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
-                  Tài khoản
-                </label>
-                <input
-                  type='text'
-                  name='username'
-                  id='username'
-                  className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
-                  placeholder='Tài khoản'
-                  value={formState?.username}
-                  onChange={handleChange('username')}
-                />
-              </div>
+
               <div>
                 <label htmlFor='password' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
                   Mật khẩu
@@ -157,6 +188,8 @@ const CreateStaff = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                     </svg>
                     Đang chờ...
                   </div>
+                ) : data.username !== '' ? (
+                  'Cập nhật'
                 ) : (
                   'Tạo'
                 )}

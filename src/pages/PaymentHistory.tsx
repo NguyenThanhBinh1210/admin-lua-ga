@@ -384,7 +384,7 @@ const PaymentHistory = () => {
                           <th scope='col' className='px-6 py-3 min-w-[150px]'>
                             Chủ tài khoản
                           </th>
-                          <th scope='col' className='px-6 py-3'>
+                          <th scope='col' className='px-6 py-3 min-w-[150px]'>
                             Số tài khoản
                           </th>
                           <th scope='col' className='px-6 py-3 min-w-[150px]'>
