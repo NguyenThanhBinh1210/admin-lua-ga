@@ -251,7 +251,8 @@ const Settings = () => {
             onClick={() => handleUpdateProduct('1')}
           >
             {' '}
-            chẳn          </button>
+            chẳn{' '}
+          </button>
           <button
             id='radom'
             placeholder='%'

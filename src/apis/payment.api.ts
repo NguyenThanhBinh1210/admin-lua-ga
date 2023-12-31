@@ -4,7 +4,7 @@ import upload from '~/utils/upload'
 
 export const getPayment = () => http.get('v1/payment-admin')
 export const searchPayment = (name: string) => http.get(`/v1/payment/search?bankName=${name}`)
-export const deletePayment = (id: string) => http.delete(`v1/payment-admin/delete?id=${id}`)
+export const deletePayment = (id: string) => http.post(`v1/payment-admin/delete?id=${id}`)
 export const updatePayment = (id: string, body: any) =>
   upload.patch(`v1/payment-admin/setting-pay-admin?id=${id}`, body)
 export const createPayment = (body: any) => upload.post('v1/payment-admin/create', body)

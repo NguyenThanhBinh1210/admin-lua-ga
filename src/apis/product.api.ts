@@ -13,24 +13,24 @@ export const searchComment = (title: string) => http.get(`/v1/comment/search?con
 export const searchContact = (title: string) => http.get(`/v1/contact/search?content=${title}`)
 export const searchMessage = (title: string) => http.get(`/v1/message/search?content=${title}`)
 export const deleteContact = (body: string[]) =>
-  http.delete(`/v1/contact/delete`, {
+  http.post(`/v1/contact/delete`, {
     data: {
       id: body
     }
   })
 export const deleteMessage = (body: string[]) =>
-  http.delete(`/v1/message/delete`, {
+  http.post(`/v1/message/delete`, {
     data: {
       id: body
     }
   })
 export const deleteComment = (body: string[]) =>
-  http.delete(`/v1/comment/delete`, {
+  http.post(`/v1/comment/delete`, {
     data: {
       id: body
     }
   })
-export const deleteStaff = (id: string) => http.delete(`v1/user/${id}`)
+export const deleteStaff = (id: string) => http.post(`v1/user/${id}`)
 export const createKey = (body: { date: number; username: string }) => http.post('key/create', body)
 export const createStaff = (body: Staff) => http.post('v1/user/register-staff', body)
 export const createCategory = (body: any) => http.post('v1/category/create', body)
@@ -50,16 +50,16 @@ export const updateConfig = (body: { title: string; price: number; url_tele: str
 export const getAllStaff = () => http.get('v1/user/get-all-staff')
 export const getAllOrder = () => http.get('v1/order/get-all')
 export const searchOrder = (name: string) => http.get(`/v1/order/search?name=${name}`)
-export const deleteOrder = (id: string) => http.delete(`v1/order/delete/${id}`)
+export const deleteOrder = (id: string) => http.post(`v1/order/delete/${id}`)
 export const searchCategory = (name: string) => http.get(`/v1/category/search?nameCategory=${name}`)
 export const deleteProduct = (body: string[]) =>
-  http.delete(`/v1/product/delete`, {
+  http.post(`/v1/product/delete`, {
     data: {
       id: body
     }
   })
 export const deleteCategory = (body: string[]) =>
-  http.delete(`/v1/category/delete`, {
+  http.post(`/v1/category/delete`, {
     data: {
       id: body
     }

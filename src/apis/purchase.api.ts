@@ -11,7 +11,7 @@ export const getMoneyByWeek = () => {
 }
 
 export const deletePurchase = (id: string, purchaseIds: string[]) => {
-  return http.delete<{ deleted_count: number }>(`/purchase/delete-purchase/${id}`, {
+  return http.post<{ deleted_count: number }>(`/purchase/delete-purchase/${id}`, {
     data: purchaseIds
   })
 }
